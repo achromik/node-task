@@ -12,12 +12,18 @@
     "build": "tsc",
     "dev": "nodemon",
     "lint": "eslint . --ext .js,.ts --fix",
+    "lint:staged": "git diff --cached --name-only --diff-filter=AM | grep '.ts$' | xargs eslint --max-warnings 0",
     "start": "node ./dist/index.js",
     "start:dev": "ts-node ./src/index.ts",
+    "test:all": "git diff --cached --name-only | grep '.ts$' | xargs jest --bail --findRelatedTests --collectCoverage=false --passWithNoTests",
     "test:coverage": "jest",
     "test": "jest --watch --collectCoverage=false",
     "webpack": "webpack --config webpack.config.js"
   },
+  "pre-commit": [
+    "lint:staged",
+    "test:all"
+  ],
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
@@ -36,6 +42,7 @@
     "eslint-plugin-prettier": "^3.3.1",
     "jest": "^26.6.3",
     "nodemon": "^2.0.7",
+    "pre-commit": "^1.2.2",
     "prettier": "^2.2.1",
     "ts-jest": "^26.5.3",
     "ts-loader": "6",
