@@ -2,6 +2,7 @@ import * as http from 'http';
 import express, { Express } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import morganBody from 'morgan-body';
 
 import { errorHandler, notFoundHandler } from './middlewares';
 import { APIServerConfig, Controller } from './types';
@@ -27,12 +28,12 @@ export class APIServer {
     this.#app = express();
     this.#path = path;
     this.#app.set('port', port);
-    this.configureMiddleware();
-    this.initializeControllers(path, controllers);
-    this.addErrorAndNotFoundMiddleware();
+    this._configureMiddleware();
+    this._initializeControllers(path, controllers);
+    this._addErrorAndNotFoundMiddleware();
   }
 
-  private configureMiddleware() {
+  private _configureMiddleware() {
     this.#app.use(express.json());
     this.#app.use(express.urlencoded({ extended: true }));
 
@@ -40,7 +41,7 @@ export class APIServer {
       cors({
         origin: '*',
         credentials: true,
-        methods: 'GET,HEAD,OPTIONS,POST,PUT',
+        methods: 'GET,HEAD,OPTIONS,POST,PUT,DELETE',
         allowedHeaders: [
           'Access-Control-Allow-Origin',
           'Access-Control-Allow-Headers',
@@ -56,15 +57,16 @@ export class APIServer {
     );
 
     this.#app.use(helmet());
+    morganBody(this.#app);
   }
 
-  private initializeControllers(apiUrl: string, controllers: Controller[]) {
+  private _initializeControllers(apiUrl: string, controllers: Controller[]) {
     controllers.forEach((controller) => {
       this.#app.use(apiUrl, controller.router);
     });
   }
 
-  public addErrorAndNotFoundMiddleware(): void {
+  private _addErrorAndNotFoundMiddleware(): void {
     this.#app.use(errorHandler);
     this.#app.use(notFoundHandler);
   }
@@ -72,7 +74,7 @@ export class APIServer {
   public start(): void {
     this.#server = this.#app.listen(this.#app.get('port'), () => {
       console.log(
-        `Server is running on port ${this.#app.get('port')}\nAPI base url is: ${
+        `Server is running on port ${this.#app.get('port')}\nAPI base url: ${
           this.#path
         }`
       );

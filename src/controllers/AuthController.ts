@@ -1,4 +1,4 @@
-import express, { Router } from 'express';
+import express, { Router, Request, Response } from 'express';
 
 import { Controller } from '../types';
 import {
@@ -22,19 +22,31 @@ export class AuthController implements Controller {
   constructor(path = '') {
     this.#router = express.Router();
     this.#authPath = path;
-    this.initializeRoutes();
+    this._initializeRoutes();
   }
 
-  private initializeRoutes() {
-    this.#router.post(this.preparePath('sign-in'), signInHandler);
+  private _initializeRoutes() {
+    this.#router.post(this._preparePath('sign-in'), this._signIn);
     this.#router.post(
-      this.preparePath('generate-key-pair'),
-      generateKeyPairHandler
+      this._preparePath('generate-key-pair'),
+      this._generateKeyPair
     );
-    this.#router.post(this.preparePath('encrypt'), encryptHandler);
+    this.#router.post(this._preparePath('encrypt'), this._encrypt);
   }
 
-  private preparePath(path: string): string {
+  private _preparePath(path: string): string {
     return `${this.#authPath}/${path}`;
+  }
+
+  private _signIn(req: Request, res: Response): void {
+    signInHandler(req, res);
+  }
+
+  private _generateKeyPair(req: Request, res: Response): void {
+    generateKeyPairHandler(req, res);
+  }
+
+  private _encrypt(req: Request, res: Response): void {
+    encryptHandler(req, res);
   }
 }
