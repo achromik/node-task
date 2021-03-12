@@ -1,0 +1,12 @@
+{
+  "users": [
+    {
+      "email": "user@mail.com",
+      "password": "$2y$10$PM419ForGU.MHBIhLcYgqeVMZ3H54jXsS.1OxOLeEWFL7YMOfFX1m"
+    },
+    {
+      "email": "admin@mail.com",
+      "password": "$2b$10$jY7ukYPpG3QDjfnD.OR4v.adS4j/s1AfrJSvZ.fJbQdUlLOAGRbSq"
+    }
+  ]
+}

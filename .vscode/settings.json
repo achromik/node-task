@@ -4,5 +4,7 @@
     "**.webpack": true,
     "**node_modules": true,
     "**coverage": true
-  }
+  },
+  "window.zoomLevel": 1.84548795292192,
+  "zoombar.defaultZoom": 140
 }
