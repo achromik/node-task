@@ -43,6 +43,7 @@ export class AuthController implements Controller {
     signInHandler(req, res, next);
   }
 
+  /* istanbul ignore next: decorator coverage issue */
   @auth
   private _generateKeyPair(
     req: Request,
@@ -52,6 +53,7 @@ export class AuthController implements Controller {
     generateKeyPairHandler(req, res, next);
   }
 
+  /* istanbul ignore next: decorator coverage issue */
   @auth
   private _encrypt(req: Request, res: Response, next: NextFunction): void {
     encryptHandler(req, res, next);
