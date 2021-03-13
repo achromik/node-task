@@ -1,12 +1,10 @@
 import { AuthController } from './controllers';
 import { APIServer } from './APIServer';
-import { verifyRequiredEnvs } from './utils/verifyEnvs';
-
-verifyRequiredEnvs(['PORT', 'API_BASE_URL']);
+import { config } from './config';
 
 const server = new APIServer([new AuthController()], {
-  port: parseInt(process.env.PORT as string, 10),
-  path: process.env.API_BASE_PATH,
+  port: config.PORT,
+  path: config.API_BASE,
 });
 
 server.start();

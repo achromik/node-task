@@ -8,7 +8,8 @@ export const verifyRequiredEnvs: (envs: string[]) => void = (envs) => {
 
   if (unsetEnv.length) {
     console.error(
-      'Required ENV variables are not set: [' + unsetEnv.join(', ') + ']'
+      '\n\nPLEASE add followed variables to .env file',
+      `\nRequired ENV variables are not set: [${unsetEnv.join(', ')}]\n\n`
     );
 
     process.exit(1);

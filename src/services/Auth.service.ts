@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import JWT from 'jsonwebtoken';
 
+import { config } from '../config';
 import { UserService } from './User.service';
 
 interface Payload {
@@ -18,8 +19,8 @@ export class AuthService {
   }
 
   static async generateAuthToken(email: string): Promise<string> {
-    const token = JWT.sign({ email }, 'secret', {
-      expiresIn: '5m',
+    const token = JWT.sign({ email }, config.JWT_SECRET, {
+      expiresIn: config.JWT_TTL,
     });
     return token;
   }
@@ -28,7 +29,7 @@ export class AuthService {
     const authToken = authHeader.split(' ')[1] || '';
 
     try {
-      const payload = JWT.verify(authToken, 'secret');
+      const payload = JWT.verify(authToken, config.JWT_SECRET);
 
       const user = UserService.getUserByEmail((payload as Payload).email);
 
