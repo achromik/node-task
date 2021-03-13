@@ -1,7 +1,9 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
-import { HttpException } from '../../common/HttpException';
-
-export function generateKeyPairHandler(_req: Request, _res: Response): void {
-  throw new HttpException(501, 'Generating Key Pair not implemented yet');
+export function generateKeyPairHandler(
+  _req: Request,
+  res: Response,
+  _next: NextFunction
+): void {
+  res.status(501).send('Not implemented');
 }

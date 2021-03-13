@@ -1,4 +1,4 @@
-import express, { Router, Request, Response } from 'express';
+import express, { Router, Request, Response, NextFunction } from 'express';
 
 import { Controller } from '../types';
 import {
@@ -6,6 +6,7 @@ import {
   generateKeyPairHandler,
   signInHandler,
 } from '../handlers/auth';
+import { auth } from '../decorators/authentication';
 
 export class AuthController implements Controller {
   #authPath: string;
@@ -38,14 +39,20 @@ export class AuthController implements Controller {
     return `${this.#authPath}/${path}`;
   }
 
-  private _signIn(req: Request, res: Response): void {
-    signInHandler(req, res);
+  private _signIn(req: Request, res: Response, next: NextFunction): void {
+    signInHandler(req, res, next);
   }
 
-  private _generateKeyPair(req: Request, res: Response): void {
-    generateKeyPairHandler(req, res);
+  @auth
+  private _generateKeyPair(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): void {
+    generateKeyPairHandler(req, res, next);
   }
 
+  @auth
   private _encrypt(req: Request, res: Response): void {
     encryptHandler(req, res);
   }

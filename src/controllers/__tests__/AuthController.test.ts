@@ -1,25 +1,34 @@
-const originalExpress = jest.requireActual('express');
-let router = originalExpress.Router();
-const postSpy = jest.fn();
-
-jest.doMock('express', () => {
-  return {
-    ...originalExpress,
-    Router: () => ({
-      ...router,
-      post: postSpy.mockImplementation((...args: unknown[]) =>
-        router.post(...args)
-      ),
-    }),
-  };
-});
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AuthController } from '../';
 
+jest.mock('express', () => {
+  return require('jest-express');
+});
+
 describe('AuthController', () => {
-  beforeEach(() => {
-    router = originalExpress.Router();
-    jest.clearAllMocks();
+  let signInSpy: jest.SpyInstance;
+  let generateKeyPairSpy: jest.SpyInstance;
+  let encryptSpy: jest.SpyInstance;
+
+  beforeAll(() => {
+    signInSpy = jest.spyOn(AuthController.prototype as any, '_signIn');
+    generateKeyPairSpy = jest.spyOn(
+      AuthController.prototype as any,
+      '_generateKeyPair'
+    );
+    encryptSpy = jest.spyOn(AuthController.prototype as any, '_encrypt');
+  });
+
+  afterAll(() => {
+    signInSpy.mockRestore();
+    generateKeyPairSpy.mockRestore();
+    encryptSpy.mockRestore();
+  });
+
+  afterEach(() => {
+    signInSpy.mockClear();
+    generateKeyPairSpy.mockClear();
+    encryptSpy.mockClear();
   });
 
   it('should create instance with proper routes with passed base route', () => {
@@ -27,44 +36,26 @@ describe('AuthController', () => {
 
     expect(auth.path).toBe('/foo');
 
-    expect(auth.router.stack.length).toBe(3);
-
-    expect(auth.router.stack[0].route.path).toBe('/foo/sign-in');
-    expect(auth.router.stack[1].route.path).toBe('/foo/generate-key-pair');
-    expect(auth.router.stack[2].route.path).toBe('/foo/encrypt');
-
-    expect(postSpy).toBeCalledTimes(3);
-
-    expect(postSpy.mock.calls[0][0]).toBe('/foo/sign-in');
-    expect(postSpy.mock.calls[0][1]).toBeInstanceOf(Function);
-
-    expect(postSpy.mock.calls[1][0]).toBe('/foo/generate-key-pair');
-    expect(postSpy.mock.calls[1][1]).toBeInstanceOf(Function);
-
-    expect(postSpy.mock.calls[2][0]).toBe('/foo/encrypt');
-    expect(postSpy.mock.calls[2][1]).toBeInstanceOf(Function);
+    expect(auth.router.post).nthCalledWith(1, '/foo/sign-in', signInSpy);
+    expect(auth.router.post).nthCalledWith(
+      2,
+      '/foo/generate-key-pair',
+      generateKeyPairSpy
+    );
+    expect(auth.router.post).nthCalledWith(3, '/foo/encrypt', encryptSpy);
   });
 
-  it('should create instance with proper routes with default base route', () => {
+  it('should create instance with proper routes with default base route', async () => {
     const auth = new AuthController();
 
     expect(auth.path).toBe('');
 
-    expect(auth.router.stack.length).toBe(3);
-
-    expect(auth.router.stack[0].route.path).toBe('/sign-in');
-    expect(auth.router.stack[1].route.path).toBe('/generate-key-pair');
-    expect(auth.router.stack[2].route.path).toBe('/encrypt');
-
-    expect(postSpy).toBeCalledTimes(3);
-
-    expect(postSpy.mock.calls[0][0]).toBe('/sign-in');
-    expect(postSpy.mock.calls[0][1]).toBeInstanceOf(Function);
-
-    expect(postSpy.mock.calls[1][0]).toBe('/generate-key-pair');
-    expect(postSpy.mock.calls[1][1]).toBeInstanceOf(Function);
-
-    expect(postSpy.mock.calls[2][0]).toBe('/encrypt');
-    expect(postSpy.mock.calls[2][1]).toBeInstanceOf(Function);
+    expect(auth.router.post).nthCalledWith(1, '/sign-in', signInSpy);
+    expect(auth.router.post).nthCalledWith(
+      2,
+      '/generate-key-pair',
+      generateKeyPairSpy
+    );
+    expect(auth.router.post).nthCalledWith(3, '/encrypt', encryptSpy);
   });
 });

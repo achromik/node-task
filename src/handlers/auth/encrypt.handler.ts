@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
 
-import { HttpException } from '../../common/HttpException';
-
-export function encryptHandler(_req: Request, _res: Response): void {
-  throw new HttpException(501, 'Encrypt not implemented yet');
+export function encryptHandler(_req: Request, res: Response): void {
+  res.status(501).send('Not implemented');
 }
