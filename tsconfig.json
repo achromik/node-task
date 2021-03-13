@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6" ,
-    "module": "commonjs" ,
-    "sourceMap": true ,
-    "outDir": "dist" ,
+    "target": "ES2017",
+    "module": "commonjs",
+    "sourceMap": true,
+    "outDir": "dist",
     "rootDir": "./src",
-    "strict": true ,
-    "esModuleInterop": true ,
+    "strict": true,
+    "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
