@@ -53,7 +53,7 @@ export class AuthController implements Controller {
   }
 
   @auth
-  private _encrypt(req: Request, res: Response): void {
-    encryptHandler(req, res);
+  private _encrypt(req: Request, res: Response, next: NextFunction): void {
+    encryptHandler(req, res, next);
   }
 }
