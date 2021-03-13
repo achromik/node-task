@@ -3,10 +3,9 @@ import { JsonDB } from 'node-json-db';
 import { db } from '../database/db';
 import { staticDecorator } from '../decorators/static';
 import { User } from '../types';
-import { HttpException } from '../common/HttpException';
 
 export interface UserServiceInterface {
-  addUser: (user: User) => User;
+  saveUserKeys: () => void;
 }
 
 export interface UserServiceStaticInterfacePart {
@@ -16,22 +15,30 @@ export interface UserServiceStaticInterfacePart {
 
 @staticDecorator<UserServiceStaticInterfacePart>()
 export class UserService {
-  static db: JsonDB = db;
-  static slug = '/users';
+  private static _db: JsonDB = db;
+  private static _slug = '/users';
 
-  addUser(_user: User): User {
-    throw new HttpException(501, 'Not Implemented yet');
+  static get slug(): string {
+    return UserService._slug;
+  }
+
+  static get db(): JsonDB {
+    return UserService._db;
   }
 
   static getUserByEmail(email: string): User | undefined {
-    const userIndex = UserService.db.getIndex('/users', email, 'email');
+    const userIndex = UserService.db.getIndex(UserService.slug, email, 'email');
 
     if (userIndex === -1) {
       return undefined;
     }
 
-    const user = UserService.db.getData(`/users[${userIndex}]`);
+    const user = UserService.db.getData(`${UserService.slug}[${userIndex}]`);
 
     return user;
+  }
+
+  saveUserKeys(): void {
+    throw new Error('Not Implemented yet');
   }
 }
