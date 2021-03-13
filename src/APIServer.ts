@@ -57,7 +57,10 @@ export class APIServer {
     );
 
     this.#app.use(helmet());
-    morganBody(this.#app);
+    morganBody(this.#app, {
+      logReqHeaderList: ['Authorization'],
+      theme: 'lightened',
+    });
   }
 
   private _initializeControllers(apiUrl: string, controllers: Controller[]) {
