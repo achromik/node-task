@@ -1,0 +1,21 @@
+@server = {{protocol}}://{{host}}
+
+
+###
+
+# @name sign
+POST {{server}}{{base}}{{signIn}}
+Content-Type: application/json
+
+{
+  "email":"admin@mail.com",
+  "password":"admin1234"
+}
+
+
+###
+@authToken = {{sign.response.body.authToken}}
+
+# @name generakeKey
+POST {{server}}{{base}}{{generatKeyPair}}
+Authorization: Bearer {{authToken}}

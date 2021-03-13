@@ -1,10 +1,20 @@
 {
   "files.exclude": {
-    "**dist": true,
-    "**.webpack": true,
-    "**node_modules": true,
-    "**coverage": true
+    "**dist": false,
+    "**.webpack": false,
+    "**node_modules": false,
+    "**coverage": false
   },
-  "window.zoomLevel": 1.84548795292192,
-  "zoombar.defaultZoom": 140
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "base": "/api",
+      "signIn": "/sign-in",
+      "generatKeyPair": "/generate-key-pair",
+      "encrypt": "/encrypt"
+    },
+    "local": {
+      "host": "localhost:3000",
+      "protocol": "http"
+    }
+  }
 }

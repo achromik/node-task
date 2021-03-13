@@ -1,6 +1,11 @@
+import 'dotenv/config';
+
 import { AuthController } from './controllers';
 import { APIServer } from './APIServer';
 import { config } from './config';
+import { verifyRequiredEnvs } from './utils/verifyEnvs';
+
+verifyRequiredEnvs(['JWT_SECRET']);
 
 const server = new APIServer([new AuthController()], {
   port: config.PORT,

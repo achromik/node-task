@@ -1,5 +1,3 @@
-import 'dotenv/config';
-
 export const verifyRequiredEnvs: (envs: string[]) => void = (envs) => {
   const requiredEnv: string[] = envs;
   const unsetEnv: string[] = requiredEnv.filter(
