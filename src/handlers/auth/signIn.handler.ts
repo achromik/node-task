@@ -28,7 +28,7 @@ export async function signInHandler(
       throw new HttpException(401, 'Not authenticated');
     }
 
-    const authToken = await AuthService.generateAuthToken(email);
+    const authToken = AuthService.generateAuthToken(email);
 
     res.status(200).json({ authToken });
   } catch (err) {

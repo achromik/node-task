@@ -149,7 +149,7 @@ describe('signIn.handler', () => {
 
     const mockGenerateAuthToken = jest
       .fn()
-      .mockResolvedValue('authentication_token');
+      .mockReturnValue('authentication_token');
     AuthService.generateAuthToken = mockGenerateAuthToken;
 
     await signInHandler(

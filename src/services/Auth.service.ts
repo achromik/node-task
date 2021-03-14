@@ -18,7 +18,7 @@ export class AuthService {
     return isValid;
   }
 
-  static async generateAuthToken(email: string): Promise<string> {
+  static generateAuthToken(email: string): string {
     const token = JWT.sign({ email }, config.JWT_SECRET, {
       expiresIn: config.JWT_TTL,
     });
