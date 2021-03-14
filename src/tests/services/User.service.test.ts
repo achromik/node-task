@@ -2,7 +2,7 @@
 import { JsonDB } from 'node-json-db';
 
 import { RsaKeys, User } from '../../types';
-import { UserService } from '../User.service';
+import { UserService } from '../../services/User.service';
 
 describe('UserService', () => {
   describe('getUserByEmail', () => {

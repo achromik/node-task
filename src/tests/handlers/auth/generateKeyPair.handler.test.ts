@@ -2,7 +2,7 @@ import express from 'express';
 import { Request } from 'jest-express/lib/request';
 import { Response } from 'jest-express/lib/response';
 
-import { generateKeyPairHandler } from '../generateKeyPair.handler';
+import { generateKeyPairHandler } from '../../../handlers/auth/generateKeyPair.handler';
 import { UserService } from '../../../services/User.service';
 import { HttpException } from '../../../common/HttpException';
 import { config } from '../../../config';

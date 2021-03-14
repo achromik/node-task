@@ -2,7 +2,7 @@ import express from 'express';
 import { Request } from 'jest-express/lib/request';
 import { Response } from 'jest-express/lib/response';
 
-import { signInHandler } from '../';
+import { signInHandler } from '../../../handlers/auth';
 import { HttpException } from '../../../common/HttpException';
 import { UserService } from '../../../services/User.service';
 import { AuthService } from '../../../services/Auth.service';

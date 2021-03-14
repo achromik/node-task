@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../../common/HttpException';
 
-import { errorHandler } from '../';
+import { errorHandler } from '../../middlewares';
 
 describe('errorHandler middleware', () => {
   let mockRequest: Partial<Request>;

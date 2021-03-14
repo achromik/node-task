@@ -2,16 +2,12 @@ import { JsonDB } from 'node-json-db';
 
 import { db } from '../database/db';
 import { staticDecorator } from '../decorators/static';
-import { User } from '../types';
+import { RsaKeys, User } from '../types';
 
 export interface UserServiceInterface {
   saveUser: () => void;
 }
 
-interface RsaKeys {
-  publicKey: string;
-  privateKey: string;
-}
 export interface UserServiceStaticInterfacePart {
   new (): UserServiceInterface;
   getUserByEmail: (email: string) => User | undefined;

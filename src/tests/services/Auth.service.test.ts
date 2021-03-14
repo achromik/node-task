@@ -1,9 +1,9 @@
 import JWT, { JsonWebTokenError } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
-import { AuthService } from '../Auth.service';
+import { AuthService } from '../../services/Auth.service';
 import { config } from '../../config';
-import { UserService } from '../User.service';
+import { UserService } from '../../services/User.service';
 import { UserJwtPayload } from '../../types';
 
 jest.mock('bcrypt');

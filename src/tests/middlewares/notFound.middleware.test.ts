@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { notFoundHandler } from '../';
+import { notFoundHandler } from '../../middlewares';
 
 describe('notFoundHandler middleware', () => {
   let mockRequest: Partial<Request>;
