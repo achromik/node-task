@@ -1,8 +1,10 @@
-import { AuthService } from '../Auth.service';
-import bcrypt from 'bcrypt';
 import JWT, { JsonWebTokenError } from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+
+import { AuthService } from '../Auth.service';
 import { config } from '../../config';
 import { UserService } from '../User.service';
+import { UserJwtPayload } from '../../types';
 
 jest.mock('bcrypt');
 jest.mock('jsonwebtoken');
@@ -67,7 +69,7 @@ describe('AuthService', () => {
       mockJwtVerify.mockRestore();
     });
 
-    it('should return false when no authHeader passed', () => {
+    it('should return undefined when no authHeader passed', () => {
       mockJwtVerify.mockImplementation(() => {
         throw new JsonWebTokenError('invalid token');
       });
@@ -76,14 +78,14 @@ describe('AuthService', () => {
 
       const result = AuthService.validateAuthToken();
 
-      expect(result).toBe<boolean>(false);
+      expect(result).toBe<UserJwtPayload | undefined>(undefined);
       expect(mockJwtVerify).toBeCalledWith<[string, string]>(
         '',
         config.JWT_SECRET
       );
     });
 
-    it('should return false when authHeader has invalid token', () => {
+    it('should return undefined when authHeader has invalid token', () => {
       mockJwtVerify.mockImplementation(() => {
         throw new JsonWebTokenError('invalid token');
       });
@@ -92,14 +94,14 @@ describe('AuthService', () => {
 
       const result = AuthService.validateAuthToken('Bearer invalid_jwt_token');
 
-      expect(result).toBe<boolean>(false);
+      expect(result).toBe<UserJwtPayload | undefined>(undefined);
       expect(mockJwtVerify).toBeCalledWith<[string, string]>(
         'invalid_jwt_token',
         config.JWT_SECRET
       );
     });
 
-    it('should return false when no matching user found', () => {
+    it('should return undefined when no matching user found', () => {
       const mockGetUseByEmail = jest.fn().mockReturnValue(undefined);
 
       UserService.getUserByEmail = mockGetUseByEmail;
@@ -110,7 +112,7 @@ describe('AuthService', () => {
 
       const result = AuthService.validateAuthToken('Bearer jwt_string');
 
-      expect(result).toBe<boolean>(false);
+      expect(result).toBe<UserJwtPayload | undefined>(undefined);
       expect(mockJwtVerify).toBeCalledWith<[string, string]>(
         'jwt_string',
         config.JWT_SECRET
@@ -118,7 +120,7 @@ describe('AuthService', () => {
       expect(mockGetUseByEmail).toBeCalledWith<[string]>('foo@mail.com');
     });
 
-    it('should return true when authToken is valid', () => {
+    it('should return payload when authToken is valid', () => {
       const mockGetUseByEmail = jest.fn().mockReturnValue({
         email: 'foo@mail.com',
         password: 'hashed_password',
@@ -132,7 +134,9 @@ describe('AuthService', () => {
 
       const result = AuthService.validateAuthToken('Bearer jwt_string');
 
-      expect(result).toBe<boolean>(true);
+      expect(result).toStrictEqual<UserJwtPayload | undefined>({
+        email: 'foo@mail.com',
+      });
       expect(mockJwtVerify).toBeCalledWith<[string, string]>(
         'jwt_string',
         config.JWT_SECRET

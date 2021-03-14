@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { JsonDB } from 'node-json-db';
+
 import { User } from '../../types';
 import { UserService } from '../User.service';
 
@@ -40,12 +41,12 @@ describe('UserService', () => {
     });
   });
 
-  describe('saveUserKeys', () => {
+  describe('saveUser', () => {
     it('should throw an error', () => {
       try {
         const user = new UserService();
 
-        user.saveUserKeys();
+        user.saveUser();
       } catch (err) {
         expect(err).toBeInstanceOf(Error);
         expect(err.message).toMatch(/not implemented/i);

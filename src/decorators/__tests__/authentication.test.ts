@@ -5,6 +5,7 @@ import { Response } from 'jest-express/lib/response';
 import { auth } from '../authentication';
 import { HttpException } from '../../common/HttpException';
 import { AuthService } from '../../services/Auth.service';
+import { UserJwtPayload } from '../../types';
 
 jest.mock('../../services/Auth.service');
 
@@ -89,9 +90,8 @@ describe('auth decorator', () => {
     expect(res).not.toBeCalled();
 
     expect(nextCallArg).toBeInstanceOf(HttpException);
-    expect(nextCallArg).toHaveProperty('statusCode');
+    expect(nextCallArg).toHaveProperty('statusCode', 403);
     expect(nextCallArg).toHaveProperty('message');
-    expect(nextCallArg.statusCode).toBe(403);
     expect(nextCallArg.message).toMatch(/not authorized. invalid token/i);
 
     expect(mockSomeFunction).not.toBeCalled();
@@ -105,7 +105,9 @@ describe('auth decorator', () => {
 
     const res = new Response();
 
-    const mockValidateAuthToken = jest.fn().mockReturnValue(true);
+    const mockValidateAuthToken = jest
+      .fn()
+      .mockReturnValue({ email: 'foo@mail.com' });
     AuthService.validateAuthToken = mockValidateAuthToken;
 
     TestClass.mockMethod(
@@ -116,6 +118,12 @@ describe('auth decorator', () => {
 
     expect(res.statusCode).toBe(123);
     expect(res.json).toBeCalledWith({ test: 'ok' });
+    expect(req).toHaveProperty('user');
+    expect(
+      ((req as unknown) as express.Request).user
+    ).toStrictEqual<UserJwtPayload>({
+      email: 'foo@mail.com',
+    });
     expect(mockSomeFunction).toBeCalled();
   });
 });

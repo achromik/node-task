@@ -22,11 +22,13 @@ export function auth(
       );
     }
 
-    const isValidToken = AuthService.validateAuthToken(authHeader);
+    const payload = AuthService.validateAuthToken(authHeader);
 
-    if (!isValidToken) {
+    if (!payload) {
       return next(new HttpException(403, 'Not authorized. Invalid token'));
     }
+
+    req.user = payload;
 
     original.apply(this, args);
   };

@@ -2,11 +2,8 @@ import bcrypt from 'bcrypt';
 import JWT from 'jsonwebtoken';
 
 import { config } from '../config';
+import { UserJwtPayload } from '../types';
 import { UserService } from './User.service';
-
-interface Payload {
-  email: string;
-}
 
 export class AuthService {
   static async validatePassword(
@@ -25,21 +22,24 @@ export class AuthService {
     return token;
   }
 
-  static validateAuthToken(authHeader = ''): boolean {
+  static validateAuthToken(authHeader = ''): UserJwtPayload | undefined {
     const authToken = authHeader.split(' ')[1] || '';
 
     try {
-      const payload = JWT.verify(authToken, config.JWT_SECRET);
+      const payload = JWT.verify(
+        authToken,
+        config.JWT_SECRET
+      ) as UserJwtPayload;
 
-      const user = UserService.getUserByEmail((payload as Payload).email);
+      const user = UserService.getUserByEmail(payload.email);
 
       if (!user) {
-        return false;
+        return undefined;
       }
 
-      return true;
+      return { email: payload.email };
     } catch (err) {
-      return false;
+      return undefined;
     }
   }
 }
