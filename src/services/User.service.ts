@@ -5,12 +5,18 @@ import { staticDecorator } from '../decorators/static';
 import { User } from '../types';
 
 export interface UserServiceInterface {
-  saveUserKeys: () => void;
+  saveUser: () => void;
 }
 
+interface RsaKeys {
+  publicKey: string;
+  privateKey: string;
+}
 export interface UserServiceStaticInterfacePart {
   new (): UserServiceInterface;
   getUserByEmail: (email: string) => User | undefined;
+  saveUserRsaKeys: (email: string, { privateKey, publicKey }: RsaKeys) => void;
+  getUserIndex: (email: string) => number | undefined;
 }
 
 @staticDecorator<UserServiceStaticInterfacePart>()
@@ -38,7 +44,29 @@ export class UserService {
     return user;
   }
 
-  saveUserKeys(): void {
+  static saveUserRsaKeys(
+    email: string,
+    { privateKey, publicKey }: RsaKeys
+  ): void {
+    const userIndex = UserService.getUserIndex(email);
+
+    UserService.db.push(
+      `${UserService.slug}[${userIndex}]`,
+      { rsaKeys: { publicKey, privateKey } },
+      false
+    );
+  }
+
+  static getUserIndex(email: string): number | undefined {
+    const userIndex = UserService.db.getIndex(UserService.slug, email, 'email');
+
+    if (userIndex === -1) {
+      return undefined;
+    }
+    return userIndex;
+  }
+
+  saveUser(): void {
     throw new Error('Not Implemented yet');
   }
 }

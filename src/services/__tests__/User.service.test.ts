@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { JsonDB } from 'node-json-db';
 
-import { User } from '../../types';
+import { RsaKeys, User } from '../../types';
 import { UserService } from '../User.service';
 
 describe('UserService', () => {
@@ -51,6 +51,70 @@ describe('UserService', () => {
         expect(err).toBeInstanceOf(Error);
         expect(err.message).toMatch(/not implemented/i);
       }
+    });
+  });
+
+  describe('getUserIndex', () => {
+    it('should return undefined when user not found', () => {
+      const mockGetIndex = jest.fn().mockReturnValue(-1);
+
+      (UserService as any)._db = ({
+        getIndex: mockGetIndex,
+      } as unknown) as JsonDB;
+
+      const result = UserService.getUserIndex('foo@mail.com');
+
+      expect(result).toBe<undefined>(undefined);
+      expect(mockGetIndex).toBeCalledWith<[string, string, string]>(
+        '/users',
+        'foo@mail.com',
+        'email'
+      );
+    });
+
+    it('should return user index when user found', () => {
+      const mockGetIndex = jest.fn().mockReturnValue(2);
+
+      (UserService as any)._db = ({
+        getIndex: mockGetIndex,
+      } as unknown) as JsonDB;
+
+      const result = UserService.getUserIndex('foo@mail.com');
+
+      expect(result).toBe<number>(2);
+      expect(mockGetIndex).toBeCalledWith<[string, string, string]>(
+        '/users',
+        'foo@mail.com',
+        'email'
+      );
+    });
+  });
+
+  describe('saveUserRsaKeys', () => {
+    it('should save user keys', () => {
+      const mockRsaKeys: RsaKeys = {
+        privateKey: 'private_key',
+        publicKey: 'public_key',
+      };
+      const userEmail = 'admin@mail.com';
+
+      const mockGetUserIndex = jest.fn().mockReturnValue(1);
+      const mockPush = jest.fn();
+
+      UserService.getUserIndex = mockGetUserIndex;
+
+      (UserService as any)._db = ({
+        push: mockPush,
+      } as unknown) as JsonDB;
+
+      UserService.saveUserRsaKeys(userEmail, mockRsaKeys);
+
+      expect(mockGetUserIndex).toBeCalledWith<[string]>(userEmail);
+      expect(mockPush).toBeCalledWith<[string, { rsaKeys: RsaKeys }, boolean]>(
+        '/users[1]',
+        { rsaKeys: mockRsaKeys },
+        false
+      );
     });
   });
 });
