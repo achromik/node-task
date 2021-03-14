@@ -91,13 +91,32 @@ describe('UserService', () => {
   });
 
   describe('saveUserRsaKeys', () => {
-    it('should save user keys', () => {
-      const mockRsaKeys: RsaKeys = {
-        privateKey: 'private_key',
-        publicKey: 'public_key',
-      };
-      const userEmail = 'admin@mail.com';
+    const mockRsaKeys: RsaKeys = {
+      privateKey: 'private_key',
+      publicKey: 'public_key',
+    };
+    const userEmail = 'admin@mail.com';
 
+    it('should throw an error when no user found with passed email', () => {
+      const mockGetUserIndex = jest.fn().mockReturnValue(undefined);
+      const mockPush = jest.fn();
+
+      UserService.getUserIndex = mockGetUserIndex;
+
+      (UserService as any)._db = ({
+        push: mockPush,
+      } as unknown) as JsonDB;
+
+      try {
+        UserService.saveUserRsaKeys(userEmail, mockRsaKeys);
+      } catch (err) {
+        expect(err).toBeInstanceOf(Error);
+        expect(err).toHaveProperty('message', 'User does not exist');
+        expect(mockPush).not.toBeCalled();
+      }
+    });
+
+    it('should save user keys', () => {
       const mockGetUserIndex = jest.fn().mockReturnValue(1);
       const mockPush = jest.fn();
 

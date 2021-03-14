@@ -50,6 +50,10 @@ export class UserService {
   ): void {
     const userIndex = UserService.getUserIndex(email);
 
+    if (!userIndex) {
+      throw new Error('User does not exist');
+    }
+
     UserService.db.push(
       `${UserService.slug}[${userIndex}]`,
       { rsaKeys: { publicKey, privateKey } },
