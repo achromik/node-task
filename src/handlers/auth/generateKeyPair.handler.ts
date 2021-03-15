@@ -12,6 +12,10 @@ export async function generateKeyPairHandler(
   next: NextFunction
 ): Promise<void> {
   try {
+    if (!req.user) {
+      throw new Error('Missing user context');
+    }
+
     const RSA = 'rsa';
 
     const options = config.rsaProps.options;
@@ -19,10 +23,6 @@ export async function generateKeyPairHandler(
     const generateKeyPair = util.promisify(crypto.generateKeyPair);
 
     const { privateKey, publicKey } = await generateKeyPair(RSA, options);
-
-    if (!req.user?.email) {
-      throw new Error('Missing user context');
-    }
 
     UserService.saveUserRsaKeys(req.user.email, {
       publicKey: publicKey.toString(),

@@ -37,6 +37,9 @@ describe('generateKeyPair.handler', () => {
   });
 
   it('should call next when crypto.generateKeyPair throws an error', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (req as any).user = { email: 'foo@mail.com' };
+
     mockGenerateKeyPair.mockImplementation(() => {
       throw new Error('Foo error');
     });
