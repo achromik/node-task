@@ -6,7 +6,7 @@ import {
   generateKeyPairHandler,
   signInHandler,
 } from '../handlers/auth';
-import { auth } from '../decorators/authentication';
+import { auth } from '../decorators';
 
 export class AuthController implements Controller {
   #authPath: string;

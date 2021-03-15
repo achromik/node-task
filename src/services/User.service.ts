@@ -1,7 +1,7 @@
 import { JsonDB } from 'node-json-db';
 
 import { db } from '../database/db';
-import { staticDecorator } from '../decorators/static';
+import { staticDecorator } from '../decorators';
 import { RsaKeys, User, UserWithRsaKeys } from '../types';
 import { HttpException } from '../common/HttpException';
 

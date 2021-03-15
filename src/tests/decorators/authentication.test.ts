@@ -2,7 +2,7 @@ import express from 'express';
 import { Request } from 'jest-express/lib/request';
 import { Response } from 'jest-express/lib/response';
 
-import { auth } from '../../decorators/authentication';
+import { auth } from '../../decorators';
 import { HttpException } from '../../common/HttpException';
 import { AuthService } from '../../services/Auth.service';
 import { UserJwtPayload } from '../../types';
