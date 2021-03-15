@@ -3,20 +3,76 @@ import { JsonDB } from 'node-json-db';
 
 import { RsaKeys, User } from '../../types';
 import { UserService } from '../../services/User.service';
+import { HttpException } from '../../common/HttpException';
 
 describe('UserService', () => {
-  describe('getUserByEmail', () => {
-    it('should return undefined if no user was found', () => {
+  describe('getUserIndex', () => {
+    it('should throw an error when user not found', () => {
       const mockGetIndex = jest.fn().mockReturnValue(-1);
 
       (UserService as any)._db = ({
         getIndex: mockGetIndex,
       } as unknown) as JsonDB;
 
-      const user = UserService.getUserByEmail('foo@mail.com');
+      try {
+        UserService.getUserIndex('foo@mail.com');
+      } catch (err) {
+        expect(err).toBeInstanceOf(HttpException);
+        expect(err).toHaveProperty<number>('statusCode', 404);
+        expect(err).toHaveProperty<string>('message', 'User not found');
+        expect(mockGetIndex).toBeCalledWith<[string, string, string]>(
+          '/users',
+          'foo@mail.com',
+          'email'
+        );
+      }
+      mockGetIndex.mockRestore();
+    });
 
-      expect(user).toBe(undefined);
-      expect(mockGetIndex).toBeCalledWith('/users', 'foo@mail.com', 'email');
+    it('should return user index when user found', () => {
+      const mockGetIndex = jest.fn();
+
+      (UserService as any)._db = ({
+        getIndex: mockGetIndex.mockImplementation(() => 2),
+      } as unknown) as JsonDB;
+
+      const result = UserService.getUserIndex('foo@mail.com');
+
+      expect(result).toBe<number>(2);
+      expect(mockGetIndex).toBeCalledWith<[string, string, string]>(
+        '/users',
+        'foo@mail.com',
+        'email'
+      );
+      mockGetIndex.mockRestore();
+    });
+  });
+
+  describe('getUserByEmail', () => {
+    it('should throw an error if no user was found', () => {
+      const mockGetUserIndex = jest.fn().mockImplementation(() => {
+        throw new HttpException(404, 'User not found');
+      });
+
+      const mockGetData = jest.fn();
+
+      UserService.getUserIndex = mockGetUserIndex;
+
+      (UserService as any)._db = ({
+        getData: mockGetData,
+      } as unknown) as JsonDB;
+
+      try {
+        UserService.getUserByEmail('foo@mail.com');
+      } catch (err) {
+        expect(err).toBeInstanceOf(HttpException);
+        expect(err).toHaveProperty<number>('statusCode', 404);
+        expect(err).toHaveProperty<string>('message', 'User not found');
+        expect(mockGetData).not.toBeCalled();
+        expect(mockGetUserIndex).toBeCalledWith<[string]>('foo@mail.com');
+      }
+      mockGetUserIndex.mockRestore();
+      mockGetData.mockRestore();
     });
 
     it('should return user', () => {
@@ -25,19 +81,22 @@ describe('UserService', () => {
         password: 'hashed_password',
       };
 
-      const mockGetIndex = jest.fn().mockReturnValue(1);
-      const mockGetData = jest.fn().mockReturnValue(expectedUser);
+      const mockGetUserIndex = jest.fn().mockReturnValue(1);
+      const mockGetData = jest.fn();
+
+      UserService.getUserIndex = mockGetUserIndex;
 
       (UserService as any)._db = ({
-        getIndex: mockGetIndex,
-        getData: mockGetData,
+        getData: mockGetData.mockReturnValue(expectedUser),
       } as unknown) as JsonDB;
 
       const user = UserService.getUserByEmail('foo@mail.com');
 
-      expect(user).toBe(expectedUser);
-      expect(mockGetIndex).toBeCalledWith('/users', 'foo@mail.com', 'email');
+      expect(user).toBe<User>(expectedUser);
+      expect(mockGetUserIndex).toBeCalledWith<[string]>('foo@mail.com');
       expect(mockGetData).toBeCalledWith('/users[1]');
+      mockGetUserIndex.mockRestore();
+      mockGetData.mockRestore();
     });
   });
 
@@ -51,42 +110,6 @@ describe('UserService', () => {
         expect(err).toBeInstanceOf(Error);
         expect(err.message).toMatch(/not implemented/i);
       }
-    });
-  });
-
-  describe('getUserIndex', () => {
-    it('should return undefined when user not found', () => {
-      const mockGetIndex = jest.fn().mockReturnValue(-1);
-
-      (UserService as any)._db = ({
-        getIndex: mockGetIndex,
-      } as unknown) as JsonDB;
-
-      const result = UserService.getUserIndex('foo@mail.com');
-
-      expect(result).toBe<undefined>(undefined);
-      expect(mockGetIndex).toBeCalledWith<[string, string, string]>(
-        '/users',
-        'foo@mail.com',
-        'email'
-      );
-    });
-
-    it('should return user index when user found', () => {
-      const mockGetIndex = jest.fn().mockReturnValue(2);
-
-      (UserService as any)._db = ({
-        getIndex: mockGetIndex,
-      } as unknown) as JsonDB;
-
-      const result = UserService.getUserIndex('foo@mail.com');
-
-      expect(result).toBe<number>(2);
-      expect(mockGetIndex).toBeCalledWith<[string, string, string]>(
-        '/users',
-        'foo@mail.com',
-        'email'
-      );
     });
   });
 
@@ -114,6 +137,8 @@ describe('UserService', () => {
         expect(err).toHaveProperty('message', 'User does not exist');
         expect(mockPush).not.toBeCalled();
       }
+      mockGetUserIndex.mockRestore();
+      mockPush.mockRestore();
     });
 
     it('should save user keys', () => {
@@ -134,6 +159,59 @@ describe('UserService', () => {
         { rsaKeys: mockRsaKeys },
         false
       );
+
+      mockGetUserIndex.mockRestore();
+      mockPush.mockRestore();
+    });
+  });
+  describe('getUserPublicKey', () => {
+    it('should throw an error when user does not exist', () => {
+      const mockGetUserIndex = jest.fn().mockImplementation(() => {
+        throw new HttpException(404, 'User not found');
+      });
+
+      UserService.getUserIndex = mockGetUserIndex;
+
+      const mockGetData = jest.fn();
+
+      (UserService as any)._db = ({
+        getData: mockGetData,
+      } as unknown) as JsonDB;
+
+      try {
+        UserService.getUserPublicKey('foo@mail.com');
+      } catch (err) {
+        expect(err).toBeInstanceOf(Error);
+        expect(err).toHaveProperty<number>('statusCode', 404);
+        expect(err).toHaveProperty<string>('message', 'User not found');
+        expect(mockGetUserIndex).toBeCalledWith<[string]>('foo@mail.com');
+        expect(mockGetData).not.toBeCalled();
+      }
+      mockGetUserIndex.mockRestore();
+      mockGetData.mockRestore();
+    });
+
+    it('should return public key', () => {
+      const mockRsaKeys: RsaKeys = {
+        publicKey: 'pub_key',
+        privateKey: 'priv_key',
+      };
+      const mockGetUserIndex = jest.fn().mockReturnValue(2);
+
+      UserService.getUserIndex = mockGetUserIndex;
+
+      const mockGetData = jest.fn();
+
+      (UserService as any)._db = ({
+        getData: mockGetData.mockReturnValue({ rsaKeys: mockRsaKeys }),
+      } as unknown) as JsonDB;
+
+      const result = UserService.getUserPublicKey('foo@mail.com');
+      expect(result).toBe<string>('pub_key');
+      expect(mockGetUserIndex).toBeCalledWith<[string]>('foo@mail.com');
+      expect(mockGetData).toBeCalledWith<[string]>('/users[2]');
+      mockGetUserIndex.mockRestore();
+      mockGetData.mockRestore();
     });
   });
 });

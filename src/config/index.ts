@@ -13,7 +13,6 @@ export const config = {
       privateKeyEncoding: {
         type: 'pkcs8',
         format: 'pem',
-        cipher: 'sha-256',
       },
     },
   },
