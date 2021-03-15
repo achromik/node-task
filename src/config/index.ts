@@ -16,4 +16,5 @@ export const config = {
       },
     },
   },
+  filePath: './data/files/sample.pdf',
 };
