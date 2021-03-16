@@ -5,8 +5,10 @@
 ### Installation and running
 
 **1.** Create `.env` file based on `.env.example`
-> Required is only `JWT_SECRET`
-> The rest have defaults:
+
+Important:  `JWT_SECRET` *- required, used to secure JWT token*
+
+The rest are optional and have defaults:
 
 ```sh
 PORT = 3000  #port on which API will be exposed
