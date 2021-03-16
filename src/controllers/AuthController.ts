@@ -1,11 +1,9 @@
 import express, { Router, Request, Response, NextFunction } from 'express';
 
 import { Controller } from '../types';
-import {
-  encryptHandler,
-  generateKeyPairHandler,
-  signInHandler,
-} from '../handlers/auth';
+import { signInHandler } from '../handlers/auth';
+import { encryptHandler, generateKeyPairHandler } from '../handlers/crypto';
+
 import { auth } from '../decorators';
 
 export class AuthController implements Controller {

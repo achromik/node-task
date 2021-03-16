@@ -2,7 +2,7 @@
 import express from 'express';
 import { Request } from 'jest-express/lib/request';
 
-import { encryptHandler } from '../../../handlers/auth';
+import { encryptHandler } from '../../../handlers/crypto';
 import { HttpException } from '../../../common/HttpException';
 import { UserService } from '../../../services/User.service';
 import { CryptoService } from '../../../services/Crypto.service';
