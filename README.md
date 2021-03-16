@@ -2,6 +2,8 @@
 
 ## Development
 
+### Installation and running
+
 **1.** Create `.env` file based on `.env.example`
 > Required is only `JWT_SECRET`
 > The rest have defaults:
@@ -58,30 +60,90 @@ npm run webpack
 npm run start
 ```
 
-### API
+## API
 
 Server is running on: `http://localhost:3000`
 
-#### Authorization
+### Authorization
 
 Header
   : Authorization: Bearer \<token>
 
-##### Credentials for mock users
+#### Credentials for mock users
 
 |       | email          | password  |
 | :---: | -------------- | --------- |
 |   1   | admin@mail.com | admin1234 |
 |   2   | user@mail.com  | user1234  |
 
-#### Endpoints
+### Endpoints
 
-Not authorized endpoints
-  : `POST /api/sign-in`
+#### Not authorized endpoints
 
-Authorized endpoints
-  : `POST /api/generate-key-pair`
-    `POST /api/encrypt`
+#### `POST /api/sign-in`
+
+*Request:*
+
+>```json
+>{
+>  "email": "string",
+>  "password": "string"
+>}
+
+*Response:*
+
+>```json
+>  {
+>    "authToken": "eyJhbGciOiJ...."
+>  }
+>  ```
+
+&nbsp;
+
+#### Authorized endpoints
+
+#### `POST /api/generate-key-pair`
+
+Header:
+> Authorization: Bearer \<token>
+
+*Response:*
+
+>```json
+>{
+>   "privateKey": "-----BEGIN PRIVATE KEY-----MIIEvQIBA....",
+>   "publicKey": "-----BEGIN PUBLIC KEY-----MIIBCgKa..."
+>}
+>  ```
+
+Notice: *For security reason only public key is stored in database.*
+
+&nbsp;
+
+#### `POST /api/encrypt`
+
+Header:
+> Authorization: Bearer \<token>
+
+*Response:*
+
+>```json
+>  {
+>    "data": "MwOSshOLrk...:8Z2BLr5OfzTCp9...
+>  }
+>  ```
+
+Notice: The `data` property is concatenated from two parts separated by colon `:`. The first one is encrypted AES password with RSA public key. The second one is file content encrypted with the AES password.
+
+To get original content follow these steps:
+
+  1. Split the data string for two parts. The divider is colon char `:`
+  2. Decrypt the first part **AES password** using **RSA private key**
+  3. Decrypt the second part using decrypted **AES password** in the previous step.
+  4. Decrypted result is the original content.
+
+Important: Used AES algorithm is *AES-128-ECB* without initialization vector (IV)
+&nbsp;
 
 ## Requirements
 
