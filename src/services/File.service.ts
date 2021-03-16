@@ -21,9 +21,13 @@ export interface FileServiceStaticInterfacePart {
 
 @staticDecorator<FileServiceStaticInterfacePart>()
 export class FileService {
-  #rs: fs.ReadStream;
+  #rs: fs.ReadStream | undefined = undefined;
 
   constructor(filePath: string) {
+    this._createReadSteam(filePath);
+  }
+
+  private _createReadSteam(filePath: string) {
     this.#rs = fs.createReadStream(filePath);
   }
 
@@ -34,7 +38,7 @@ export class FileService {
     onError: OnErrorFunction = (_err) => {}
   ): Promise<{ data: string }> {
     return new Promise((resolve, reject) => {
-      this.#rs
+      (this.#rs as fs.ReadStream)
         .on('data', (chunk) => onData(chunk))
         .on('end', () => {
           const data = onEnd();

@@ -29,7 +29,6 @@ export class CryptoService {
   }
 
   private _createCipher() {
-    // throw new Error('fooo cipher error');
     this.#cipher = crypto.createCipheriv(
       'aes-128-ecb',
       this.#aesKey,
@@ -45,7 +44,6 @@ export class CryptoService {
 
   public end(): void {
     if (this.#cipher) {
-      console.log(this.#aesKey);
       this.#encrypted = Buffer.concat([this.#encrypted, this.#cipher.final()]);
     }
   }
