@@ -3,12 +3,16 @@ import * as fs from 'fs';
 import { HttpException } from '../common/HttpException';
 import { staticDecorator } from '../decorators';
 
-export type OnData = (chunk: string | Buffer) => void;
-export type OnEnd = () => void;
-export type OnError = (err: Error) => void;
+export type OnDataFunction = (chunk: string | Buffer) => void;
+export type OnEndFunction = () => { data: string };
+export type OnErrorFunction = (err: Error) => void;
 
 export interface FileServiceInterface {
-  read: (onData: OnData, onEnd: OnEnd, onError: OnError) => void;
+  read: (
+    onData: OnDataFunction,
+    onEnd: OnEndFunction,
+    onError: OnErrorFunction
+  ) => void;
 }
 
 export interface FileServiceStaticInterfacePart {
@@ -23,18 +27,23 @@ export class FileService {
     this.#rs = fs.createReadStream(filePath);
   }
 
-  public read(
-    onData: OnData,
-    onEnd: OnEnd,
+  public async read(
+    onData: OnDataFunction,
+    onEnd: OnEndFunction,
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onError: OnError = (_err) => {}
-  ): void {
-    this.#rs
-      .on('data', (chunk) => onData(chunk))
-      .on('end', () => onEnd())
-      .on('error', (err) => {
-        onError(err);
-      });
+    onError: OnErrorFunction = (_err) => {}
+  ): Promise<{ data: string }> {
+    return new Promise((resolve, reject) => {
+      this.#rs
+        .on('data', (chunk) => onData(chunk))
+        .on('end', () => {
+          const data = onEnd();
+          resolve(data);
+        })
+        .on('error', (err) => {
+          reject(onError(err));
+        });
+    });
   }
 
   public static async readFile(fileName: string): Promise<Buffer> {

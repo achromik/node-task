@@ -4,9 +4,9 @@ import { HttpException } from '../../common/HttpException';
 import { UserService } from '../../services/User.service';
 import {
   FileService,
-  OnData,
-  OnEnd,
-  OnError,
+  OnDataFunction,
+  OnEndFunction,
+  OnErrorFunction,
 } from '../../services/File.service';
 import { CryptoService } from '../../services/Crypto.service';
 import { config } from '../../config';
@@ -27,30 +27,33 @@ export async function encryptHandler(
 
     const file = new FileService(config.filePath);
 
-    file.read(
+    const data = await file.read(
       fileReadOnData(cipher),
-      fileReadOnEnd(cipher, res),
+      fileReadOnEnd(cipher),
       fileReadOnError(next)
     );
+
+    res.status(200).json(data);
   } catch (err) {
     next(new HttpException(400, err.message));
   }
 }
 
-function fileReadOnData(cipher: CryptoService): OnData {
+function fileReadOnData(cipher: CryptoService): OnDataFunction {
   return (chunk: string | Buffer) => cipher.encrypt(chunk as Buffer);
 }
 
-function fileReadOnEnd(cipher: CryptoService, res: Response): OnEnd {
+function fileReadOnEnd(cipher: CryptoService): OnEndFunction {
   return () => {
     cipher.end();
-    res.status(200).json({
+
+    return {
       data: `${cipher.aesKeyEncrypted}:${cipher.encrypted}`,
-    });
+    };
   };
 }
 
-function fileReadOnError(next: NextFunction): OnError {
+function fileReadOnError(next: NextFunction): OnErrorFunction {
   return (err: Error) => {
     next(new HttpException(500, err.message));
   };

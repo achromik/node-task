@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 
 export class CryptoService {
   #aesKey: string;
-  #cipher: crypto.Cipher;
+  #cipher: crypto.Cipher | null = null;
   #encrypted: Buffer;
   #publicRsaKey: string;
 
@@ -11,11 +11,7 @@ export class CryptoService {
     this.#aesKey = crypto.randomBytes(8).toString('hex');
     this.#publicRsaKey = publicRsaKey;
 
-    this.#cipher = crypto.createCipheriv(
-      'aes-128-ecb',
-      this.#aesKey,
-      null
-    ) as crypto.Cipher;
+    this._createCipher();
   }
 
   get key(): string {
@@ -32,11 +28,25 @@ export class CryptoService {
       .toString('base64');
   }
 
+  private _createCipher() {
+    // throw new Error('fooo cipher error');
+    this.#cipher = crypto.createCipheriv(
+      'aes-128-ecb',
+      this.#aesKey,
+      null
+    ) as crypto.Cipher;
+  }
+
   public encrypt(data: Buffer): void {
-    this.#encrypted = this.#cipher.update(data.toString());
+    if (this.#cipher) {
+      this.#encrypted = this.#cipher.update(data.toString());
+    }
   }
 
   public end(): void {
-    this.#encrypted = Buffer.concat([this.#encrypted, this.#cipher.final()]);
+    if (this.#cipher) {
+      console.log(this.#aesKey);
+      this.#encrypted = Buffer.concat([this.#encrypted, this.#cipher.final()]);
+    }
   }
 }
