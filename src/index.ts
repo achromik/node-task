@@ -1,13 +1,14 @@
 import 'dotenv/config';
 
 import { AuthController } from '~modules/auth/controllers';
+import { CryptoController } from '~modules/crypto/controllers';
 import { APIServer } from './APIServer';
 import { config } from '~config';
 import { verifyRequiredEnvs } from '~utils';
 
 verifyRequiredEnvs(['JWT_SECRET']);
 
-const server = new APIServer([new AuthController()], {
+const server = new APIServer([new AuthController(), new CryptoController()], {
   port: config.PORT,
   path: config.API_BASE,
 });

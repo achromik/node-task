@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import morganBody from 'morgan-body';
 
 import { errorHandler, notFoundHandler } from './middlewares';
-import { APIServerConfig, Controller } from '~types';
+import { APIServerConfig, ControllerInterface } from '~types';
 
 export class APIServer {
   readonly #app: Express;
@@ -22,7 +22,7 @@ export class APIServer {
   }
 
   constructor(
-    controllers: Controller[],
+    controllers: ControllerInterface[],
     { port = 3000, path = '/api' }: APIServerConfig
   ) {
     this.#app = express();
@@ -63,7 +63,10 @@ export class APIServer {
     });
   }
 
-  private _initializeControllers(apiUrl: string, controllers: Controller[]) {
+  private _initializeControllers(
+    apiUrl: string,
+    controllers: ControllerInterface[]
+  ) {
     controllers.forEach((controller) => {
       this.#app.use(apiUrl, controller.router);
     });
