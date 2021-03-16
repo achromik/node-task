@@ -14,7 +14,7 @@ export interface UserServiceStaticInterfacePart {
   getUserByEmail: (email: string) => User;
   saveUserRsaKeys: (email: string, { publicKey }: RsaKeys) => void;
   getUserIndex: (email: string) => number;
-  getUserPublicKey: (email: string) => string;
+  getUserPublicKey: (email: string) => string | undefined;
 }
 
 @staticDecorator<UserServiceStaticInterfacePart>()
@@ -63,14 +63,14 @@ export class UserRepository {
     return userIndex;
   }
 
-  static getUserPublicKey(email: string): string {
+  static getUserPublicKey(email: string): string | undefined {
     const userIndex = UserRepository.getUserIndex(email);
 
     const user: UserWithRsaKeys = UserRepository.db.getData(
       `${UserRepository.slug}[${userIndex}]`
     );
 
-    return user.rsaKeys.publicKey;
+    return user?.rsaKeys?.publicKey;
   }
 
   saveUser(): void {

@@ -21,7 +21,16 @@ export async function encryptHandler(
       throw new Error('Missing user context');
     }
 
-    const publicKey = UserRepository.getUserPublicKey(req.user.email);
+    const publicKey: string | undefined = UserRepository.getUserPublicKey(
+      req.user.email
+    );
+
+    if (typeof publicKey == 'undefined') {
+      throw new HttpException(
+        400,
+        'Unable to encrypt due to missing RSA keys. Try to generate RSA keys'
+      );
+    }
 
     const cipher = new CryptoService(publicKey);
 
