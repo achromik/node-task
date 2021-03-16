@@ -1,9 +1,9 @@
 import { JsonDB } from 'node-json-db';
 
 import { db } from '../database/db';
-import { staticDecorator } from '../decorators';
-import { RsaKeys, User, UserWithRsaKeys } from '../types';
-import { HttpException } from '../common/HttpException';
+import { staticDecorator } from '~decorators';
+import { RsaKeys, User, UserWithRsaKeys } from '~types';
+import { HttpException } from '~common';
 
 export interface UserServiceInterface {
   saveUser: () => void;
@@ -18,38 +18,44 @@ export interface UserServiceStaticInterfacePart {
 }
 
 @staticDecorator<UserServiceStaticInterfacePart>()
-export class UserService {
+export class UserRepository {
   private static _db: JsonDB = db;
   private static _slug = '/users';
 
   static get slug(): string {
-    return UserService._slug;
+    return UserRepository._slug;
   }
 
   static get db(): JsonDB {
-    return UserService._db;
+    return UserRepository._db;
   }
 
   static getUserByEmail(email: string): User {
-    const userIndex = UserService.getUserIndex(email);
+    const userIndex = UserRepository.getUserIndex(email);
 
-    const user = UserService.db.getData(`${UserService.slug}[${userIndex}]`);
+    const user = UserRepository.db.getData(
+      `${UserRepository.slug}[${userIndex}]`
+    );
 
     return user;
   }
 
   static saveUserRsaKeys(email: string, { publicKey }: RsaKeys): void {
-    const userIndex = UserService.getUserIndex(email);
+    const userIndex = UserRepository.getUserIndex(email);
 
-    UserService.db.push(
-      `${UserService.slug}[${userIndex}]`,
+    UserRepository.db.push(
+      `${UserRepository.slug}[${userIndex}]`,
       { rsaKeys: { publicKey } },
       false
     );
   }
 
   static getUserIndex(email: string): number {
-    const userIndex = UserService.db.getIndex(UserService.slug, email, 'email');
+    const userIndex = UserRepository.db.getIndex(
+      UserRepository.slug,
+      email,
+      'email'
+    );
 
     if (userIndex === -1) {
       throw new HttpException(404, 'User not found');
@@ -58,10 +64,10 @@ export class UserService {
   }
 
   static getUserPublicKey(email: string): string {
-    const userIndex = UserService.getUserIndex(email);
+    const userIndex = UserRepository.getUserIndex(email);
 
-    const user: UserWithRsaKeys = UserService.db.getData(
-      `${UserService.slug}[${userIndex}]`
+    const user: UserWithRsaKeys = UserRepository.db.getData(
+      `${UserRepository.slug}[${userIndex}]`
     );
 
     return user.rsaKeys.publicKey;

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { HttpException } from '../../common/HttpException';
+import { HttpException } from '~common';
 
 import { errorHandler } from '../../middlewares';
 

@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { JsonDB } from 'node-json-db';
 
-import { RsaKeys, User } from '../../types';
-import { UserService } from '../../services/User.service';
-import { HttpException } from '../../common/HttpException';
+import { RsaKeys, User } from '~types';
+import { UserRepository } from '~repositories/User.repository';
+import { HttpException } from '~common';
 
-describe('UserService', () => {
+describe('UserRepository', () => {
   describe('getUserIndex', () => {
     it('should throw an error when user not found', () => {
       const mockGetIndex = jest.fn().mockReturnValue(-1);
 
-      (UserService as any)._db = ({
+      (UserRepository as any)._db = ({
         getIndex: mockGetIndex,
       } as unknown) as JsonDB;
 
       try {
-        UserService.getUserIndex('foo@mail.com');
+        UserRepository.getUserIndex('foo@mail.com');
       } catch (err) {
         expect(err).toBeInstanceOf(HttpException);
         expect(err).toHaveProperty<number>('statusCode', 404);
@@ -32,11 +32,11 @@ describe('UserService', () => {
     it('should return user index when user found', () => {
       const mockGetIndex = jest.fn();
 
-      (UserService as any)._db = ({
+      (UserRepository as any)._db = ({
         getIndex: mockGetIndex.mockImplementation(() => 2),
       } as unknown) as JsonDB;
 
-      const result = UserService.getUserIndex('foo@mail.com');
+      const result = UserRepository.getUserIndex('foo@mail.com');
 
       expect(result).toBe<number>(2);
       expect(mockGetIndex).toBeCalledWith<[string, string, string]>(
@@ -56,14 +56,14 @@ describe('UserService', () => {
 
       const mockGetData = jest.fn();
 
-      UserService.getUserIndex = mockGetUserIndex;
+      UserRepository.getUserIndex = mockGetUserIndex;
 
-      (UserService as any)._db = ({
+      (UserRepository as any)._db = ({
         getData: mockGetData,
       } as unknown) as JsonDB;
 
       try {
-        UserService.getUserByEmail('foo@mail.com');
+        UserRepository.getUserByEmail('foo@mail.com');
       } catch (err) {
         expect(err).toBeInstanceOf(HttpException);
         expect(err).toHaveProperty<number>('statusCode', 404);
@@ -84,13 +84,13 @@ describe('UserService', () => {
       const mockGetUserIndex = jest.fn().mockReturnValue(1);
       const mockGetData = jest.fn();
 
-      UserService.getUserIndex = mockGetUserIndex;
+      UserRepository.getUserIndex = mockGetUserIndex;
 
-      (UserService as any)._db = ({
+      (UserRepository as any)._db = ({
         getData: mockGetData.mockReturnValue(expectedUser),
       } as unknown) as JsonDB;
 
-      const user = UserService.getUserByEmail('foo@mail.com');
+      const user = UserRepository.getUserByEmail('foo@mail.com');
 
       expect(user).toBe<User>(expectedUser);
       expect(mockGetUserIndex).toBeCalledWith<[string]>('foo@mail.com');
@@ -103,7 +103,7 @@ describe('UserService', () => {
   describe('saveUser', () => {
     it('should throw an error', () => {
       try {
-        const user = new UserService();
+        const user = new UserRepository();
 
         user.saveUser();
       } catch (err) {
@@ -123,14 +123,14 @@ describe('UserService', () => {
       const mockGetUserIndex = jest.fn().mockReturnValue(undefined);
       const mockPush = jest.fn();
 
-      UserService.getUserIndex = mockGetUserIndex;
+      UserRepository.getUserIndex = mockGetUserIndex;
 
-      (UserService as any)._db = ({
+      (UserRepository as any)._db = ({
         push: mockPush,
       } as unknown) as JsonDB;
 
       try {
-        UserService.saveUserRsaKeys(userEmail, mockRsaKeys);
+        UserRepository.saveUserRsaKeys(userEmail, mockRsaKeys);
       } catch (err) {
         expect(err).toBeInstanceOf(Error);
         expect(err).toHaveProperty('message', 'User does not exist');
@@ -144,13 +144,13 @@ describe('UserService', () => {
       const mockGetUserIndex = jest.fn().mockReturnValue(1);
       const mockPush = jest.fn();
 
-      UserService.getUserIndex = mockGetUserIndex;
+      UserRepository.getUserIndex = mockGetUserIndex;
 
-      (UserService as any)._db = ({
+      (UserRepository as any)._db = ({
         push: mockPush,
       } as unknown) as JsonDB;
 
-      UserService.saveUserRsaKeys(userEmail, mockRsaKeys);
+      UserRepository.saveUserRsaKeys(userEmail, mockRsaKeys);
 
       expect(mockGetUserIndex).toBeCalledWith<[string]>(userEmail);
       expect(mockPush).toBeCalledWith<[string, { rsaKeys: RsaKeys }, boolean]>(
@@ -169,16 +169,16 @@ describe('UserService', () => {
         throw new HttpException(404, 'User not found');
       });
 
-      UserService.getUserIndex = mockGetUserIndex;
+      UserRepository.getUserIndex = mockGetUserIndex;
 
       const mockGetData = jest.fn();
 
-      (UserService as any)._db = ({
+      (UserRepository as any)._db = ({
         getData: mockGetData,
       } as unknown) as JsonDB;
 
       try {
-        UserService.getUserPublicKey('foo@mail.com');
+        UserRepository.getUserPublicKey('foo@mail.com');
       } catch (err) {
         expect(err).toBeInstanceOf(Error);
         expect(err).toHaveProperty<number>('statusCode', 404);
@@ -196,15 +196,15 @@ describe('UserService', () => {
       };
       const mockGetUserIndex = jest.fn().mockReturnValue(2);
 
-      UserService.getUserIndex = mockGetUserIndex;
+      UserRepository.getUserIndex = mockGetUserIndex;
 
       const mockGetData = jest.fn();
 
-      (UserService as any)._db = ({
+      (UserRepository as any)._db = ({
         getData: mockGetData.mockReturnValue({ rsaKeys: mockRsaKeys }),
       } as unknown) as JsonDB;
 
-      const result = UserService.getUserPublicKey('foo@mail.com');
+      const result = UserRepository.getUserPublicKey('foo@mail.com');
       expect(result).toBe<string>('pub_key');
       expect(mockGetUserIndex).toBeCalledWith<[string]>('foo@mail.com');
       expect(mockGetData).toBeCalledWith<[string]>('/users[2]');

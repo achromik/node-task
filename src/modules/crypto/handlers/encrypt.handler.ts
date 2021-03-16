@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { HttpException } from '../../../common/HttpException';
-import { UserService } from '../../../services/User.service';
+import { HttpException } from '~common';
+import { UserRepository } from '~repositories/User.repository';
 import {
   FileService,
   OnDataFunction,
@@ -9,7 +9,7 @@ import {
   OnErrorFunction,
 } from '../../../services/File.service';
 import { CryptoService } from '../services/Crypto.service';
-import { config } from '../../../config';
+import { config } from '~config';
 
 export async function encryptHandler(
   req: Request,
@@ -21,7 +21,7 @@ export async function encryptHandler(
       throw new Error('Missing user context');
     }
 
-    const publicKey = UserService.getUserPublicKey(req.user.email);
+    const publicKey = UserRepository.getUserPublicKey(req.user.email);
 
     const cipher = new CryptoService(publicKey);
 

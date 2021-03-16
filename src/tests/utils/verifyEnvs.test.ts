@@ -1,4 +1,4 @@
-import { verifyRequiredEnvs } from '../../utils/verifyEnvs';
+import { verifyRequiredEnvs } from '~utils';
 
 describe('verifyRequiredEnvs()', () => {
   const OLD_ENV = process.env;

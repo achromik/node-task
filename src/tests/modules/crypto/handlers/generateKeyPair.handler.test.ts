@@ -2,11 +2,11 @@ import express from 'express';
 import { Request } from 'jest-express/lib/request';
 import { Response } from 'jest-express/lib/response';
 
-import { generateKeyPairHandler } from '../../../../modules/crypto/handlers/';
-import { UserService } from '../../../../services/User.service';
-import { HttpException } from '../../../../common/HttpException';
+import { generateKeyPairHandler } from '~modules/crypto/handlers/';
+import { UserRepository } from '~repositories/User.repository';
+import { HttpException } from '~common';
 
-jest.mock('../../../../services/User.service');
+jest.mock('~repositories/User.repository');
 
 describe('generateKeyPair.handler', () => {
   let req: Request;
@@ -31,7 +31,7 @@ describe('generateKeyPair.handler', () => {
 
   it('should call next when request does not have user context', async () => {
     const mockSaveUserRsaKeys = jest.fn();
-    UserService.saveUserRsaKeys = mockSaveUserRsaKeys;
+    UserRepository.saveUserRsaKeys = mockSaveUserRsaKeys;
 
     await generateKeyPairHandler(
       (req as unknown) as express.Request,
@@ -58,7 +58,7 @@ describe('generateKeyPair.handler', () => {
     const mockSaveUserRsaKeys = jest.fn().mockImplementation(() => {
       throw new Error('User not found');
     });
-    UserService.saveUserRsaKeys = mockSaveUserRsaKeys;
+    UserRepository.saveUserRsaKeys = mockSaveUserRsaKeys;
 
     await generateKeyPairHandler(
       (req as unknown) as express.Request,
@@ -84,7 +84,7 @@ describe('generateKeyPair.handler', () => {
     const res = new Response();
 
     const mockSaveUserRsaKeys = jest.fn();
-    UserService.saveUserRsaKeys = mockSaveUserRsaKeys;
+    UserRepository.saveUserRsaKeys = mockSaveUserRsaKeys;
 
     await generateKeyPairHandler(
       (req as unknown) as express.Request,

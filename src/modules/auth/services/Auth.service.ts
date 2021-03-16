@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
 import JWT from 'jsonwebtoken';
 
-import { config } from '../../../config';
-import { UserJwtPayload } from '../../../types';
-import { UserService } from '../../../services/User.service';
+import { config } from '~config';
+import { UserJwtPayload } from '~types';
+import { UserRepository } from '~repositories/User.repository';
 
 export class AuthService {
   static async validatePassword(
@@ -31,7 +31,7 @@ export class AuthService {
         config.JWT_SECRET
       ) as UserJwtPayload;
 
-      const user = UserService.getUserByEmail(payload.email);
+      const user = UserRepository.getUserByEmail(payload.email);
 
       if (!user) {
         return undefined;

@@ -15,7 +15,12 @@
     "baseUrl": "./",
     "paths": {
       "~modules/*": ["src/modules/*"],
-      "~common/*": ["src/common/*"]
+      "~common": ["src/common/index"],
+      "~config": ["src/config/index"],
+      "~types": ["src/types/index"],
+      "~decorators": ["src/decorators/index"],
+      "~utils": ["src/utils/index"],
+      "~repositories/*": ["src/repositories/*"]
     }
   }
 }

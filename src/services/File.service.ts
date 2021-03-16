@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 
-import { HttpException } from '../common/HttpException';
-import { staticDecorator } from '../decorators';
+import { HttpException } from '~common';
+import { staticDecorator } from '~decorators';
 
 export type OnDataFunction = (chunk: string | Buffer) => void;
 export type OnEndFunction = () => { data: string };

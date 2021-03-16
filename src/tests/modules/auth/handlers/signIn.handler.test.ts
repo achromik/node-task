@@ -2,13 +2,13 @@ import express from 'express';
 import { Request } from 'jest-express/lib/request';
 import { Response } from 'jest-express/lib/response';
 
-import { signInHandler } from '../../../../modules/auth/handlers';
-import { HttpException } from '../../../../common/HttpException';
-import { UserService } from '../../../../services/User.service';
-import { AuthService } from '../../../../modules/auth/services/Auth.service';
+import { signInHandler } from '~modules/auth/handlers';
+import { HttpException } from '~common';
+import { UserRepository } from '~repositories/User.repository';
+import { AuthService } from '~modules/auth/services/Auth.service';
 
-jest.mock('../../../../services/User.service');
-jest.mock('../../../../modules/auth/services/Auth.service');
+jest.mock('~repositories/User.repository');
+jest.mock('~modules/auth/services/Auth.service');
 
 describe('signIn.handler', () => {
   let req: Request;
@@ -76,7 +76,7 @@ describe('signIn.handler', () => {
     });
 
     const mockGetUserByEmail = jest.fn().mockReturnValue(undefined);
-    UserService.getUserByEmail = mockGetUserByEmail;
+    UserRepository.getUserByEmail = mockGetUserByEmail;
 
     await signInHandler(
       (req as unknown) as express.Request,
@@ -106,7 +106,7 @@ describe('signIn.handler', () => {
       email: 'foo@asd.com',
       password: 'hashed_foo',
     });
-    UserService.getUserByEmail = mockGetUserByEmail;
+    UserRepository.getUserByEmail = mockGetUserByEmail;
 
     const mockValidatePassword = jest.fn().mockResolvedValue(false);
     AuthService.validatePassword = mockValidatePassword;
@@ -142,7 +142,7 @@ describe('signIn.handler', () => {
       email: 'foo@asd.com',
       password: 'hashed_foo',
     });
-    UserService.getUserByEmail = mockGetUserByEmail;
+    UserRepository.getUserByEmail = mockGetUserByEmail;
 
     const mockValidatePassword = jest.fn().mockResolvedValue(true);
     AuthService.validatePassword = mockValidatePassword;

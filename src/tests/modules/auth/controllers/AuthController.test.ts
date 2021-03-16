@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AuthController } from '../../../../modules/auth/controllers';
+import { AuthController } from '~modules/auth/controllers';
 
 jest.mock('express', () => {
   return require('jest-express');

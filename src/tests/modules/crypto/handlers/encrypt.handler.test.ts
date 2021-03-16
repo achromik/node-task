@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import express from 'express';
 import { Request } from 'jest-express/lib/request';
-
-import { encryptHandler } from '../../../../modules/crypto/handlers';
-import { HttpException } from '../../../../common/HttpException';
-import { UserService } from '../../../../services/User.service';
-import { CryptoService } from '../../../../modules/crypto/services/Crypto.service';
-import { FileService } from '../../../../services/File.service';
-import { config } from '../../../../config';
 import { Response } from 'jest-express/lib/response';
 
-jest.mock('../../../../services/User.service');
+import { encryptHandler } from '~modules/crypto/handlers';
+import { HttpException } from '~common';
+import { UserRepository } from '~repositories/User.repository';
+import { CryptoService } from '~modules/crypto/services/Crypto.service';
+import { FileService } from '../../../../services/File.service';
+import { config } from '~config';
+
+jest.mock('~repositories/User.repository');
 
 describe('encrypt handler', () => {
   let req: Request;
@@ -35,7 +35,7 @@ describe('encrypt handler', () => {
 
   it('should call next if no user context was provided', async () => {
     const mockGetUserPublicKey = jest.fn();
-    UserService.getUserPublicKey = mockGetUserPublicKey;
+    UserRepository.getUserPublicKey = mockGetUserPublicKey;
 
     await encryptHandler(
       (req as unknown) as express.Request,
@@ -65,7 +65,7 @@ describe('encrypt handler', () => {
       });
 
     const mockGetUserPublicKey = jest.fn().mockReturnValue('publicKey');
-    UserService.getUserPublicKey = mockGetUserPublicKey;
+    UserRepository.getUserPublicKey = mockGetUserPublicKey;
 
     await encryptHandler(
       (req as unknown) as express.Request,
@@ -99,7 +99,7 @@ describe('encrypt handler', () => {
       });
 
     const mockGetUserPublicKey = jest.fn().mockReturnValue('publicKey');
-    UserService.getUserPublicKey = mockGetUserPublicKey;
+    UserRepository.getUserPublicKey = mockGetUserPublicKey;
 
     await encryptHandler(
       (req as unknown) as express.Request,
@@ -122,7 +122,7 @@ describe('encrypt handler', () => {
     (req as any).user = { email: 'foo@mail.com' };
 
     const mockGetUserPublicKey = jest.fn().mockReturnValue('publicKey');
-    UserService.getUserPublicKey = mockGetUserPublicKey;
+    UserRepository.getUserPublicKey = mockGetUserPublicKey;
 
     const spyCipher = jest
       .spyOn(CryptoService.prototype as any, '_createCipher')

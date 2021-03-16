@@ -1,10 +1,10 @@
 import JWT, { JsonWebTokenError } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
-import { AuthService } from '../../../../modules/auth/services/Auth.service';
-import { config } from '../../../../config';
-import { UserService } from '../../../../services/User.service';
-import { UserJwtPayload } from '../../../../types';
+import { AuthService } from '~modules/auth/services/Auth.service';
+import { config } from '~config';
+import { UserRepository } from '~repositories/User.repository';
+import { UserJwtPayload } from '~types';
 
 jest.mock('bcrypt');
 jest.mock('jsonwebtoken');
@@ -104,7 +104,7 @@ describe('AuthService', () => {
     it('should return undefined when no matching user found', () => {
       const mockGetUseByEmail = jest.fn().mockReturnValue(undefined);
 
-      UserService.getUserByEmail = mockGetUseByEmail;
+      UserRepository.getUserByEmail = mockGetUseByEmail;
 
       mockJwtVerify.mockReturnValue({ email: 'foo@mail.com' });
 
@@ -126,7 +126,7 @@ describe('AuthService', () => {
         password: 'hashed_password',
       });
 
-      UserService.getUserByEmail = mockGetUseByEmail;
+      UserRepository.getUserByEmail = mockGetUseByEmail;
 
       mockJwtVerify.mockReturnValue({ email: 'foo@mail.com' });
 

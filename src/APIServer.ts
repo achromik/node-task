@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import morganBody from 'morgan-body';
 
 import { errorHandler, notFoundHandler } from './middlewares';
-import { APIServerConfig, Controller } from './types';
+import { APIServerConfig, Controller } from '~types';
 
 export class APIServer {
   readonly #app: Express;

@@ -2,9 +2,9 @@ import { NextFunction, Request, Response } from 'express';
 import crypto from 'crypto';
 import * as util from 'util';
 
-import { UserService } from '../../../services/User.service';
-import { config } from '../../../config';
-import { HttpException } from '../../../common/HttpException';
+import { UserRepository } from '~repositories/User.repository';
+import { config } from '~config';
+import { HttpException } from '~common';
 
 export async function generateKeyPairHandler(
   req: Request,
@@ -24,7 +24,7 @@ export async function generateKeyPairHandler(
 
     const { privateKey, publicKey } = await generateKeyPair(RSA, options);
 
-    UserService.saveUserRsaKeys(req.user.email, {
+    UserRepository.saveUserRsaKeys(req.user.email, {
       publicKey: publicKey.toString(),
     });
 

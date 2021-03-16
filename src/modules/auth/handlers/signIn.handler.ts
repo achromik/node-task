@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { HttpException } from '../../../common/HttpException';
-import { UserService } from '../../../services/User.service';
-import { AuthService } from '../../../modules/auth/services/Auth.service';
+import { HttpException } from '~common';
+import { UserRepository } from '~repositories/User.repository';
+import { AuthService } from '~modules/auth/services/Auth.service';
 
 export async function signInHandler(
   req: Request,
@@ -16,7 +16,7 @@ export async function signInHandler(
       throw new HttpException(400, 'Missing email or password');
     }
 
-    const user = UserService.getUserByEmail(email);
+    const user = UserRepository.getUserByEmail(email);
 
     if (!user) {
       throw new HttpException(403, 'Invalid user');

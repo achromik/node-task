@@ -2,12 +2,12 @@ import express from 'express';
 import { Request } from 'jest-express/lib/request';
 import { Response } from 'jest-express/lib/response';
 
-import { auth } from '../../decorators';
-import { HttpException } from '../../common/HttpException';
-import { AuthService } from '../../modules/auth/services/Auth.service';
-import { UserJwtPayload } from '../../types';
+import { auth } from '~decorators';
+import { HttpException } from '~common';
+import { AuthService } from '~modules/auth/services/Auth.service';
+import { UserJwtPayload } from '~types';
 
-jest.mock('../../modules/auth/services/Auth.service');
+jest.mock('~modules/auth/services/Auth.service');
 
 const mockSomeFunction = jest.fn().mockImplementation((...args) => {
   const res = args[1] as express.Response;
