@@ -1,15 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { HttpException } from '../../common/HttpException';
-import { UserService } from '../../services/User.service';
+import { HttpException } from '../../../common/HttpException';
+import { UserService } from '../../../services/User.service';
 import {
   FileService,
   OnDataFunction,
   OnEndFunction,
   OnErrorFunction,
-} from '../../services/File.service';
-import { CryptoService } from '../../services/Crypto.service';
-import { config } from '../../config';
+} from '../../../services/File.service';
+import { CryptoService } from '../services/Crypto.service';
+import { config } from '../../../config';
 
 export async function encryptHandler(
   req: Request,

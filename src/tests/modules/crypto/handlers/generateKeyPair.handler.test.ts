@@ -2,11 +2,11 @@ import express from 'express';
 import { Request } from 'jest-express/lib/request';
 import { Response } from 'jest-express/lib/response';
 
-import { generateKeyPairHandler } from '../../../handlers/crypto';
-import { UserService } from '../../../services/User.service';
-import { HttpException } from '../../../common/HttpException';
+import { generateKeyPairHandler } from '../../../../modules/crypto/handlers/';
+import { UserService } from '../../../../services/User.service';
+import { HttpException } from '../../../../common/HttpException';
 
-jest.mock('../../../services/User.service');
+jest.mock('../../../../services/User.service');
 
 describe('generateKeyPair.handler', () => {
   let req: Request;

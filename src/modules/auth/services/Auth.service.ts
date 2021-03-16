@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
 import JWT from 'jsonwebtoken';
 
-import { config } from '../config';
-import { UserJwtPayload } from '../types';
-import { UserService } from './User.service';
+import { config } from '../../../config';
+import { UserJwtPayload } from '../../../types';
+import { UserService } from '../../../services/User.service';
 
 export class AuthService {
   static async validatePassword(

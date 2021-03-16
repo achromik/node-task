@@ -2,9 +2,9 @@ import { NextFunction, Request, Response } from 'express';
 import crypto from 'crypto';
 import * as util from 'util';
 
-import { UserService } from '../../services/User.service';
-import { config } from '../../config';
-import { HttpException } from '../../common/HttpException';
+import { UserService } from '../../../services/User.service';
+import { config } from '../../../config';
+import { HttpException } from '../../../common/HttpException';
 
 export async function generateKeyPairHandler(
   req: Request,

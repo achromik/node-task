@@ -2,15 +2,15 @@
 import express from 'express';
 import { Request } from 'jest-express/lib/request';
 
-import { encryptHandler } from '../../../handlers/crypto';
-import { HttpException } from '../../../common/HttpException';
-import { UserService } from '../../../services/User.service';
-import { CryptoService } from '../../../services/Crypto.service';
-import { FileService } from '../../../services/File.service';
-import { config } from '../../../config';
+import { encryptHandler } from '../../../../modules/crypto/handlers';
+import { HttpException } from '../../../../common/HttpException';
+import { UserService } from '../../../../services/User.service';
+import { CryptoService } from '../../../../modules/crypto/services/Crypto.service';
+import { FileService } from '../../../../services/File.service';
+import { config } from '../../../../config';
 import { Response } from 'jest-express/lib/response';
 
-jest.mock('../../../services/User.service');
+jest.mock('../../../../services/User.service');
 
 describe('encrypt handler', () => {
   let req: Request;

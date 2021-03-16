@@ -2,13 +2,13 @@ import express from 'express';
 import { Request } from 'jest-express/lib/request';
 import { Response } from 'jest-express/lib/response';
 
-import { signInHandler } from '../../../handlers/auth';
-import { HttpException } from '../../../common/HttpException';
-import { UserService } from '../../../services/User.service';
-import { AuthService } from '../../../services/Auth.service';
+import { signInHandler } from '../../../../modules/auth/handlers';
+import { HttpException } from '../../../../common/HttpException';
+import { UserService } from '../../../../services/User.service';
+import { AuthService } from '../../../../modules/auth/services/Auth.service';
 
-jest.mock('../../../services/User.service');
-jest.mock('../../../services/Auth.service');
+jest.mock('../../../../services/User.service');
+jest.mock('../../../../modules/auth/services/Auth.service');
 
 describe('signIn.handler', () => {
   let req: Request;

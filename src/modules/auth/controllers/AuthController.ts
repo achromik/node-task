@@ -1,10 +1,13 @@
 import express, { Router, Request, Response, NextFunction } from 'express';
 
-import { Controller } from '../types';
-import { signInHandler } from '../handlers/auth';
-import { encryptHandler, generateKeyPairHandler } from '../handlers/crypto';
+import { Controller } from '../../../types';
+import { signInHandler } from '../handlers';
+import {
+  encryptHandler,
+  generateKeyPairHandler,
+} from '../../../modules/crypto/handlers';
 
-import { auth } from '../decorators';
+import { auth } from '../../../decorators';
 
 export class AuthController implements Controller {
   #authPath: string;

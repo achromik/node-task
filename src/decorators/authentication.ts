@@ -1,7 +1,7 @@
 import { NextFunction, Request } from 'express';
 
 import { HttpException } from '../common/HttpException';
-import { AuthService } from '../services/Auth.service';
+import { AuthService } from '../modules/auth/services/Auth.service';
 
 export function auth(
   target: unknown,

@@ -1,6 +1,6 @@
 import 'dotenv/config';
 
-import { AuthController } from './controllers';
+import { AuthController } from './modules/auth/controllers';
 import { APIServer } from './APIServer';
 import { config } from './config';
 import { verifyRequiredEnvs } from './utils/verifyEnvs';

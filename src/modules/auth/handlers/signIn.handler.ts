@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { HttpException } from '../../common/HttpException';
-import { UserService } from '../../services/User.service';
-import { AuthService } from '../../services/Auth.service';
+import { HttpException } from '../../../common/HttpException';
+import { UserService } from '../../../services/User.service';
+import { AuthService } from '../../../modules/auth/services/Auth.service';
 
 export async function signInHandler(
   req: Request,
