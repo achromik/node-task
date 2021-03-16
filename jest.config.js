@@ -7,7 +7,7 @@ module.exports = {
     '^.+\\.ts$': 'ts-jest',
   },
   collectCoverage: true,
-  collectCoverageFrom: ['~types/*'],
+  collectCoverageFrom: ['src/**/*.ts', '!**/node_modules/**', '!src/types/*'],
   testEnvironment: 'node',
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
     prefix: '<rootDir>/',
