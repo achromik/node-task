@@ -26,7 +26,6 @@ export async function generateKeyPairHandler(
 
     UserService.saveUserRsaKeys(req.user.email, {
       publicKey: publicKey.toString(),
-      privateKey: privateKey.toString(),
     });
 
     res.status(200).json({

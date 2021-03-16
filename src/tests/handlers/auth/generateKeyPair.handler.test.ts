@@ -97,7 +97,6 @@ describe('generateKeyPair.handler', () => {
 
     expect(res.json).toBeCalled();
     expect(res.json.mock.calls[0][0]).toHaveProperty('publicKey');
-    expect(res.json.mock.calls[0][0]).toHaveProperty('privateKey');
 
     expect(res.statusCode).toBe(200);
 

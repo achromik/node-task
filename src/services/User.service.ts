@@ -12,7 +12,7 @@ export interface UserServiceInterface {
 export interface UserServiceStaticInterfacePart {
   new (): UserServiceInterface;
   getUserByEmail: (email: string) => User;
-  saveUserRsaKeys: (email: string, { privateKey, publicKey }: RsaKeys) => void;
+  saveUserRsaKeys: (email: string, { publicKey }: RsaKeys) => void;
   getUserIndex: (email: string) => number;
   getUserPublicKey: (email: string) => string;
 }
@@ -38,15 +38,12 @@ export class UserService {
     return user;
   }
 
-  static saveUserRsaKeys(
-    email: string,
-    { privateKey, publicKey }: RsaKeys
-  ): void {
+  static saveUserRsaKeys(email: string, { publicKey }: RsaKeys): void {
     const userIndex = UserService.getUserIndex(email);
 
     UserService.db.push(
       `${UserService.slug}[${userIndex}]`,
-      { rsaKeys: { publicKey, privateKey } },
+      { rsaKeys: { publicKey } },
       false
     );
   }

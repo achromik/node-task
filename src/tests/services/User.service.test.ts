@@ -115,7 +115,6 @@ describe('UserService', () => {
 
   describe('saveUserRsaKeys', () => {
     const mockRsaKeys: RsaKeys = {
-      privateKey: 'private_key',
       publicKey: 'public_key',
     };
     const userEmail = 'admin@mail.com';
@@ -194,7 +193,6 @@ describe('UserService', () => {
     it('should return public key', () => {
       const mockRsaKeys: RsaKeys = {
         publicKey: 'pub_key',
-        privateKey: 'priv_key',
       };
       const mockGetUserIndex = jest.fn().mockReturnValue(2);
 
