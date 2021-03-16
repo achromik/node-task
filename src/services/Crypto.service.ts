@@ -33,8 +33,6 @@ export class CryptoService {
   }
 
   public encrypt(data: Buffer): void {
-    console.log(data.toString());
-
     this.#encrypted = this.#cipher.update(data.toString());
   }
 
