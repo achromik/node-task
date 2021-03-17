@@ -1,7 +1,9 @@
 import { Router, Request, Response, NextFunction } from 'express';
+import { validate } from '~decorators';
 
 import { ControllerInterface } from '~types';
 import { signInHandler } from '../handlers';
+import { signInSchema } from '../schema';
 
 export class AuthController implements ControllerInterface {
   #path: string;
@@ -29,6 +31,7 @@ export class AuthController implements ControllerInterface {
     return `${this.#path}/${path}`;
   }
 
+  @validate(signInSchema)
   private _signIn(req: Request, res: Response, next: NextFunction): void {
     signInHandler(req, res, next);
   }

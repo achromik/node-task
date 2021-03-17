@@ -1,25 +1,11 @@
 import * as fs from 'fs';
 
 import { HttpException } from '~common';
-import { staticDecorator } from '~decorators';
 
 export type OnDataFunction = (chunk: string | Buffer) => void;
 export type OnEndFunction = () => { data: string };
 export type OnErrorFunction = (err: Error) => void;
 
-export interface FileServiceInterface {
-  read: (
-    onData: OnDataFunction,
-    onEnd: OnEndFunction,
-    onError: OnErrorFunction
-  ) => void;
-}
-
-export interface FileServiceStaticInterfacePart {
-  readFile: (fileName: string) => Promise<Buffer>;
-}
-
-@staticDecorator<FileServiceStaticInterfacePart>()
 export class FileService {
   #rs: fs.ReadStream | undefined = undefined;
 

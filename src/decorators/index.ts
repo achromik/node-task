@@ -1,2 +1,2 @@
 export * from './authentication';
-export * from './static';
+export * from './validate';

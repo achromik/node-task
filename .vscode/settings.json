@@ -16,5 +16,14 @@
       "host": "localhost:3000",
       "protocol": "http"
     }
+  },
+  "path-intellisense.mappings": {
+    "~modules/*": "${workspaceRoot}/src/modules/*}",
+    "~common": "${workspaceRoot}/src/common/index",
+    "~config": "${workspaceRoot}/src/config/index",
+    "~types": "${workspaceRoot}/src/types/index",
+    "~decorators": "${workspaceRoot}/src/decorators/index",
+    "~utils": "${workspaceRoot}/src/utils/index",
+    "~repositories/*": "${workspaceRoot}/src/repositories/*"
   }
 }

@@ -100,19 +100,6 @@ describe('UserRepository', () => {
     });
   });
 
-  describe('saveUser', () => {
-    it('should throw an error', () => {
-      try {
-        const user = new UserRepository();
-
-        user.saveUser();
-      } catch (err) {
-        expect(err).toBeInstanceOf(Error);
-        expect(err.message).toMatch(/not implemented/i);
-      }
-    });
-  });
-
   describe('saveUserRsaKeys', () => {
     const mockRsaKeys: RsaKeys = {
       publicKey: 'public_key',

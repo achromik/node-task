@@ -1,23 +1,9 @@
 import { JsonDB } from 'node-json-db';
 
 import { db } from '../database/db';
-import { staticDecorator } from '~decorators';
 import { RsaKeys, User, UserWithRsaKeys } from '~types';
 import { HttpException } from '~common';
 
-export interface UserServiceInterface {
-  saveUser: () => void;
-}
-
-export interface UserServiceStaticInterfacePart {
-  new (): UserServiceInterface;
-  getUserByEmail: (email: string) => User;
-  saveUserRsaKeys: (email: string, { publicKey }: RsaKeys) => void;
-  getUserIndex: (email: string) => number;
-  getUserPublicKey: (email: string) => string | undefined;
-}
-
-@staticDecorator<UserServiceStaticInterfacePart>()
 export class UserRepository {
   private static _db: JsonDB = db;
   private static _slug = '/users';
@@ -71,9 +57,5 @@ export class UserRepository {
     );
 
     return user?.rsaKeys?.publicKey;
-  }
-
-  saveUser(): void {
-    throw new Error('Not Implemented yet');
   }
 }
