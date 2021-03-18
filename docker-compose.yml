@@ -1,0 +1,15 @@
+version: "3.7"
+
+services:
+  mongodb:
+    image: mongo:4.4.4
+    container_name: nt-mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${DB_NAME:-node-task}
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongodata:/data/db

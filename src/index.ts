@@ -5,15 +5,9 @@ import { CryptoController } from '~modules/crypto/controllers';
 import { APIServer } from './APIServer';
 import { config } from '~config';
 import { verifyRequiredEnvs } from '~utils';
+import { MongoDatabase } from './database/mongo';
 
-verifyRequiredEnvs(['JWT_SECRET']);
-
-const server = new APIServer([new AuthController(), new CryptoController()], {
-  port: config.PORT,
-  path: config.API_BASE,
-});
-
-server.start();
+declare const module: WebpackHotModule;
 
 type ModuleId = string | number;
 
@@ -30,9 +24,20 @@ interface WebpackHotModule {
   };
 }
 
-declare const module: WebpackHotModule;
+verifyRequiredEnvs(['JWT_SECRET', 'DB_NAME']);
 
-if (module.hot) {
-  module.hot.accept();
-  module.hot.dispose(() => server.close());
-}
+(async () => {
+  await MongoDatabase.connect(`mongodb://localhost:27017/${config.DB_NAME}`);
+
+  const server = new APIServer([new AuthController(), new CryptoController()], {
+    port: config.PORT,
+    path: config.API_BASE,
+  });
+
+  server.start();
+
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => server.close());
+  }
+})();
