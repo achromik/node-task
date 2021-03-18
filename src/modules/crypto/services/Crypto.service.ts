@@ -8,7 +8,7 @@ export class CryptoService {
 
   constructor(publicRsaKey: string) {
     this.#encrypted = Buffer.from('');
-    this.#aesKey = crypto.randomBytes(8).toString('hex');
+    this.#aesKey = crypto.randomBytes(16).toString('hex');
     this.#publicRsaKey = publicRsaKey;
 
     this._createCipher();
@@ -30,7 +30,7 @@ export class CryptoService {
 
   private _createCipher() {
     this.#cipher = crypto.createCipheriv(
-      'aes-128-ecb',
+      'aes-256-ecb',
       this.#aesKey,
       null
     ) as crypto.Cipher;

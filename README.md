@@ -144,7 +144,7 @@ To get original content follow these steps:
   3. Decrypt the second part using decrypted **AES password** in the previous step.
   4. Decrypted result is the original content.
 
-Important: Used AES algorithm is *AES-128-ECB* without initialization vector (IV)
+Important: Used AES algorithm is *AES-256-ECB* without initialization vector (IV)
 &nbsp;
 
 ## Requirements
