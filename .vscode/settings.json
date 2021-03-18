@@ -1,9 +1,10 @@
 {
   "files.exclude": {
-    "**dist": false,
-    "**.webpack": false,
-    "**node_modules": false,
-    "**coverage": false
+    "**dist": true,
+    "**.webpack": true,
+    "**node_modules": true,
+    "**coverage": true,
+    "**build": true
   },
   "rest-client.environmentVariables": {
     "$shared": {
@@ -24,6 +25,9 @@
     "~types": "${workspaceRoot}/src/types/index",
     "~decorators": "${workspaceRoot}/src/decorators/index",
     "~utils": "${workspaceRoot}/src/utils/index",
-    "~repositories/*": "${workspaceRoot}/src/repositories/*"
-  }
+    "~repositories/*": "${workspaceRoot}/src/repositories/*",
+    "~repository/*": "${workspaceRoot}/src/repository/*",
+    "~models": "${workspaceRoot}/src/repository/index"
+  },
+  "cSpell.words": ["mongodata", "typeorm"]
 }

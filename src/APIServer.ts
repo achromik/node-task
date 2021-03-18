@@ -80,9 +80,8 @@ export class APIServer {
   public start(): void {
     this.#server = this.#app.listen(this.#app.get('port'), () => {
       console.log(
-        `Server is running on port ${this.#app.get('port')}\nAPI base url: ${
-          this.#path
-        }`
+        `✅ Server is running on port ${this.#app.get('port')}`,
+        `\n  👉 API base url: ${this.#path}`
       );
     });
   }

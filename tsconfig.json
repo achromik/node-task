@@ -20,7 +20,9 @@
       "~types": ["src/types/index"],
       "~decorators": ["src/decorators/index"],
       "~utils": ["src/utils/index"],
-      "~repositories/*": ["src/repositories/*"]
+      "~repositories/*": ["src/repositories/*"],
+      "~repository/*": ["src/repository/*"],
+      "~models": ["src/models/index"]
     }
   }
 }
