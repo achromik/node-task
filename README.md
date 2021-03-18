@@ -1,5 +1,9 @@
 # node-task
 
+## Future improvements
+
+- [ ] Use MongoDB instead of JsonDB *(branch `move-to-mongo`)*
+
 ## Development
 
 ### Installation and running
