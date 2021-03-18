@@ -27,17 +27,25 @@ interface WebpackHotModule {
 verifyRequiredEnvs(['JWT_SECRET', 'DB_NAME']);
 
 (async () => {
-  await MongoDatabase.connect(`mongodb://localhost:27017/${config.DB_NAME}`);
+  try {
+    await MongoDatabase.connect(`mongodb://localhost:27017/${config.DB_NAME}`);
 
-  const server = new APIServer([new AuthController(), new CryptoController()], {
-    port: config.PORT,
-    path: config.API_BASE,
-  });
+    const server = new APIServer(
+      [new AuthController(), new CryptoController()],
+      {
+        port: config.PORT,
+        path: config.API_BASE,
+      }
+    );
 
-  server.start();
+    server.start();
 
-  if (module.hot) {
-    module.hot.accept();
-    module.hot.dispose(() => server.close());
+    if (module.hot) {
+      module.hot.accept();
+      module.hot.dispose(() => server.close());
+    }
+  } catch (err) {
+    console.error(`Oops something wrong happened!`, `\nError: ${err.message}`);
+    process.exit(1);
   }
 })();

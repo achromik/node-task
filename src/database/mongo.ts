@@ -19,6 +19,7 @@ export class MongoDatabase {
       console.log('✅ Mongo Database connected!');
     } catch (err) {
       console.error('❌ Mongo database not connected!');
+      throw err;
     }
   }
 }
