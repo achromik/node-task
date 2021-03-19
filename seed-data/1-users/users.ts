@@ -1,8 +1,9 @@
+import { ObjectId } from 'bson';
 import { getObjectId } from 'mongo-seeding';
 
-import { IUser } from '../../src/models/user';
+import { UserDocument } from '~models';
 
-type UserData = Pick<IUser, 'id' | 'email' | 'password'>;
+type UserData = Pick<UserDocument, 'email' | 'password'> & { id: ObjectId };
 
 const users: UserData[] = [
   {
