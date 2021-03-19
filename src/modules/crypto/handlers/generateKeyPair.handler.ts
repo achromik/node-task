@@ -1,10 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import crypto from 'crypto';
-import * as util from 'util';
 
-import { UserRepository } from '~repositories/User.repository';
-import { config } from '~config';
+import { UserRepository } from '~repository/UserRepository';
 import { HttpException } from '~common';
+import { CryptoService } from '../services/Crypto.service';
 
 export async function generateKeyPairHandler(
   req: Request,
@@ -16,15 +14,11 @@ export async function generateKeyPairHandler(
       throw new Error('Missing user context');
     }
 
-    const RSA = 'rsa';
+    const { privateKey, publicKey } = await CryptoService.generateKeyPair();
 
-    const options = config.rsaProps.options;
+    const userRepository = new UserRepository();
 
-    const generateKeyPair = util.promisify(crypto.generateKeyPair);
-
-    const { privateKey, publicKey } = await generateKeyPair(RSA, options);
-
-    UserRepository.saveUserRsaKeys(req.user.email, {
+    await userRepository.updateByEmail(req.user.email, {
       publicKey: publicKey.toString(),
     });
 

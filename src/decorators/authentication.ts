@@ -10,7 +10,7 @@ export function auth(
 ): void {
   const original = descriptor.value;
 
-  descriptor.value = function (...args: unknown[]) {
+  descriptor.value = async function (...args: unknown[]) {
     const req = args[0] as Request;
     const next = args[2] as NextFunction;
 
@@ -22,7 +22,7 @@ export function auth(
       );
     }
 
-    const payload = AuthService.validateAuthToken(authHeader);
+    const payload = await AuthService.validateAuthToken(authHeader);
 
     if (!payload) {
       return next(new HttpException(403, 'Not authorized. Invalid token'));
@@ -30,6 +30,6 @@ export function auth(
 
     req.user = payload;
 
-    original.apply(this, args);
+    original.call(this, req, args[1], next);
   };
 }

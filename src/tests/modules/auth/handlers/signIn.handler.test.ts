@@ -4,11 +4,8 @@ import { Response } from 'jest-express/lib/response';
 
 import { signInHandler } from '~modules/auth/handlers';
 import { HttpException } from '~common';
-import { UserRepository } from '~repositories/User.repository';
 import { AuthService } from '~modules/auth/services/Auth.service';
-
-jest.mock('~repositories/User.repository');
-jest.mock('~modules/auth/services/Auth.service');
+import { User } from '~models';
 
 describe('signIn.handler', () => {
   let req: Request;
@@ -16,6 +13,7 @@ describe('signIn.handler', () => {
   let next: jest.Mock;
 
   beforeEach(() => {
+    jest.restoreAllMocks();
     req = new Request();
     res = jest.fn();
     next = jest.fn();
@@ -31,52 +29,13 @@ describe('signIn.handler', () => {
     jest.restoreAllMocks();
   });
 
-  it('should call next whit a HttpException error when user email is missing', async () => {
-    req.setBody({ password: 'asd' });
+  it('should call next whit a HttpException error when signIN service failed', async () => {
+    req.setBody({ email: 'foo@asd.com', password: 'foo' });
 
-    await signInHandler(
-      (req as unknown) as express.Request,
-      (res as unknown) as express.Response,
-      next
-    );
-
-    const nextCallArg = next.mock.calls[0][0];
-    expect(next).toBeCalledTimes(1);
-    expect(res).not.toBeCalled();
-    expect(nextCallArg).toBeInstanceOf(HttpException);
-    expect(nextCallArg).toHaveProperty('statusCode');
-    expect(nextCallArg).toHaveProperty('message');
-    expect(nextCallArg.statusCode).toBe(400);
-    expect(nextCallArg.message).toMatch(/missing.*email/i);
-  });
-
-  it('should call next whit a HttpException error when user password is missing', async () => {
-    req.setBody({ email: 'foo@asd.com' });
-
-    await signInHandler(
-      (req as unknown) as express.Request,
-      (res as unknown) as express.Response,
-      next
-    );
-
-    const nextCallArg = next.mock.calls[0][0];
-    expect(next).toBeCalledTimes(1);
-    expect(res).not.toBeCalled();
-    expect(nextCallArg).toBeInstanceOf(HttpException);
-    expect(nextCallArg).toHaveProperty('statusCode');
-    expect(nextCallArg).toHaveProperty('message');
-    expect(nextCallArg.statusCode).toBe(400);
-    expect(nextCallArg.message).toMatch(/missing.*password/i);
-  });
-
-  it('should call next with a HttpException error when passed user does not exist', async () => {
-    req.setBody({
-      email: 'foo@asd.com',
-      password: 'foo',
+    const mockSignInService = jest.fn().mockImplementation(() => {
+      throw new HttpException(403, 'User not found');
     });
-
-    const mockGetUserByEmail = jest.fn().mockReturnValue(undefined);
-    UserRepository.getUserByEmail = mockGetUserByEmail;
+    AuthService.signIn = mockSignInService;
 
     await signInHandler(
       (req as unknown) as express.Request,
@@ -87,47 +46,15 @@ describe('signIn.handler', () => {
     const nextCallArg = next.mock.calls[0][0];
     expect(next).toBeCalledTimes(1);
     expect(res).not.toBeCalled();
-    expect(mockGetUserByEmail).toBeCalledWith('foo@asd.com');
-
+    expect(nextCallArg).toHaveProperty<string>(
+      'message',
+      expect.stringMatching(/user not found/i)
+    );
     expect(nextCallArg).toBeInstanceOf(HttpException);
     expect(nextCallArg).toHaveProperty('statusCode');
     expect(nextCallArg).toHaveProperty('message');
     expect(nextCallArg.statusCode).toBe(403);
-    expect(nextCallArg.message).toMatch(/invalid user/i);
-  });
-
-  it('should call next with a HttpException error when passed password was invalid', async () => {
-    req.setBody({
-      email: 'foo@asd.com',
-      password: 'foo',
-    });
-
-    const mockGetUserByEmail = jest.fn().mockReturnValue({
-      email: 'foo@asd.com',
-      password: 'hashed_foo',
-    });
-    UserRepository.getUserByEmail = mockGetUserByEmail;
-
-    const mockValidatePassword = jest.fn().mockResolvedValue(false);
-    AuthService.validatePassword = mockValidatePassword;
-
-    await signInHandler(
-      (req as unknown) as express.Request,
-      (res as unknown) as express.Response,
-      next
-    );
-
-    const nextCallArg = next.mock.calls[0][0];
-    expect(next).toBeCalledTimes(1);
-    expect(res).not.toBeCalled();
-    expect(mockGetUserByEmail).toBeCalledWith('foo@asd.com');
-    expect(mockValidatePassword).toBeCalledWith('foo', 'hashed_foo');
-
-    expect(nextCallArg).toBeInstanceOf(HttpException);
-    expect(nextCallArg).toHaveProperty('statusCode');
-    expect(nextCallArg).toHaveProperty('message');
-    expect(nextCallArg.statusCode).toBe(401);
-    expect(nextCallArg.message).toMatch(/not authenticated/i);
+    expect(nextCallArg.message).toMatch(/user not found/i);
   });
 
   it('should respond with status 200 and JWT authentication token', async () => {
@@ -138,19 +65,11 @@ describe('signIn.handler', () => {
 
     const res = new Response();
 
-    const mockGetUserByEmail = jest.fn().mockReturnValue({
-      email: 'foo@asd.com',
-      password: 'hashed_foo',
-    });
-    UserRepository.getUserByEmail = mockGetUserByEmail;
-
-    const mockValidatePassword = jest.fn().mockResolvedValue(true);
-    AuthService.validatePassword = mockValidatePassword;
-
-    const mockGenerateAuthToken = jest
+    const mockSignInService = jest
       .fn()
-      .mockReturnValue('authentication_token');
-    AuthService.generateAuthToken = mockGenerateAuthToken;
+      .mockImplementation(() => 'authentication_token');
+
+    AuthService.signIn = mockSignInService;
 
     await signInHandler(
       (req as unknown) as express.Request,
@@ -159,12 +78,13 @@ describe('signIn.handler', () => {
     );
 
     expect(next).not.toBeCalled();
-    expect(mockGetUserByEmail).toBeCalledWith('foo@asd.com');
-    expect(mockValidatePassword).toBeCalledWith('foo', 'hashed_foo');
-    expect(mockGenerateAuthToken).toBeCalledWith('foo@asd.com');
+    expect(mockSignInService).toBeCalledWith<[User]>({
+      email: 'foo@asd.com',
+      password: 'foo',
+    });
 
     expect(res.json).toBeCalledWith({ authToken: 'authentication_token' });
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe<number>(200);
 
     res.resetMocked();
   });

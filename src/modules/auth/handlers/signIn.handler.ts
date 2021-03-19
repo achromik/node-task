@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { HttpException } from '~common';
-import { UserRepository } from '~repositories/User.repository';
 import { AuthService } from '~modules/auth/services/Auth.service';
+import { UserDocument } from '~models';
 
 export async function signInHandler(
   req: Request,
@@ -10,25 +9,9 @@ export async function signInHandler(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { email, password } = req.body;
+    const { email, password }: UserDocument = req.body;
 
-    if (!email || !password) {
-      throw new HttpException(400, 'Missing email or password');
-    }
-
-    const user = UserRepository.getUserByEmail(email);
-
-    if (!user) {
-      throw new HttpException(403, 'Invalid user');
-    }
-
-    const isValid = await AuthService.validatePassword(password, user.password);
-
-    if (!isValid) {
-      throw new HttpException(401, 'Not authenticated');
-    }
-
-    const authToken = AuthService.generateAuthToken(email);
+    const authToken = await AuthService.signIn({ email, password });
 
     res.status(200).json({ authToken });
   } catch (err) {

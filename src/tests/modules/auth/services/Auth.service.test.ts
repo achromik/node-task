@@ -1,10 +1,12 @@
 import JWT, { JsonWebTokenError } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import { FilterQuery } from 'mongoose';
 
 import { AuthService } from '~modules/auth/services/Auth.service';
 import { config } from '~config';
-import { UserRepository } from '~repositories/User.repository';
+import { UserRepository } from '~repository/UserRepository';
 import { UserJwtPayload } from '~types';
+import { UserDocument } from '~models';
 
 jest.mock('bcrypt');
 jest.mock('jsonwebtoken');
@@ -23,6 +25,7 @@ describe('AuthService', () => {
 
     afterEach(() => {
       mockCompare.mockRestore();
+      jest.resetAllMocks();
     });
 
     it("should return false if password does not match password's hash", async () => {
@@ -69,14 +72,14 @@ describe('AuthService', () => {
       mockJwtVerify.mockRestore();
     });
 
-    it('should return undefined when no authHeader passed', () => {
+    it('should return undefined when no authHeader passed', async () => {
       mockJwtVerify.mockImplementation(() => {
         throw new JsonWebTokenError('invalid token');
       });
 
       JWT.verify = mockJwtVerify;
 
-      const result = AuthService.validateAuthToken();
+      const result = await AuthService.validateAuthToken();
 
       expect(result).toBe<UserJwtPayload | undefined>(undefined);
       expect(mockJwtVerify).toBeCalledWith<[string, string]>(
@@ -85,14 +88,16 @@ describe('AuthService', () => {
       );
     });
 
-    it('should return undefined when authHeader has invalid token', () => {
+    it('should return undefined when authHeader has invalid token', async () => {
       mockJwtVerify.mockImplementation(() => {
         throw new JsonWebTokenError('invalid token');
       });
 
       JWT.verify = mockJwtVerify;
 
-      const result = AuthService.validateAuthToken('Bearer invalid_jwt_token');
+      const result = await AuthService.validateAuthToken(
+        'Bearer invalid_jwt_token'
+      );
 
       expect(result).toBe<UserJwtPayload | undefined>(undefined);
       expect(mockJwtVerify).toBeCalledWith<[string, string]>(
@@ -101,47 +106,54 @@ describe('AuthService', () => {
       );
     });
 
-    it('should return undefined when no matching user found', () => {
-      const mockGetUseByEmail = jest.fn().mockReturnValue(undefined);
-
-      UserRepository.getUserByEmail = mockGetUseByEmail;
+    it('should return undefined when no matching user found', async () => {
+      const mockGetUseByEmail = jest
+        .spyOn(UserRepository.prototype, 'findOne')
+        .mockImplementation(() => Promise.resolve(null));
 
       mockJwtVerify.mockReturnValue({ email: 'foo@mail.com' });
 
       JWT.verify = mockJwtVerify;
 
-      const result = AuthService.validateAuthToken('Bearer jwt_string');
+      const result = await AuthService.validateAuthToken('Bearer jwt_string');
 
       expect(result).toBe<UserJwtPayload | undefined>(undefined);
       expect(mockJwtVerify).toBeCalledWith<[string, string]>(
         'jwt_string',
         config.JWT_SECRET
       );
-      expect(mockGetUseByEmail).toBeCalledWith<[string]>('foo@mail.com');
+      expect(mockGetUseByEmail).toBeCalledWith<[FilterQuery<UserDocument>]>({
+        email: 'foo@mail.com',
+      });
     });
 
-    it('should return payload when authToken is valid', () => {
-      const mockGetUseByEmail = jest.fn().mockReturnValue({
-        email: 'foo@mail.com',
-        password: 'hashed_password',
-      });
-
-      UserRepository.getUserByEmail = mockGetUseByEmail;
+    it('should return payload when authToken is valid', async () => {
+      const mockGetUseByEmail = jest
+        .spyOn(UserRepository.prototype, 'findOne')
+        .mockImplementation(
+          () =>
+            Promise.resolve({
+              email: 'foo1@mail.com',
+              password: 'hashed_password',
+            }) as Promise<UserDocument>
+        );
 
       mockJwtVerify.mockReturnValue({ email: 'foo@mail.com' });
 
       JWT.verify = mockJwtVerify;
 
-      const result = AuthService.validateAuthToken('Bearer jwt_string');
+      const result = await AuthService.validateAuthToken('Bearer jwt_string');
 
       expect(result).toStrictEqual<UserJwtPayload | undefined>({
-        email: 'foo@mail.com',
+        email: 'foo1@mail.com',
       });
       expect(mockJwtVerify).toBeCalledWith<[string, string]>(
         'jwt_string',
         config.JWT_SECRET
       );
-      expect(mockGetUseByEmail).toBeCalledWith<[string]>('foo@mail.com');
+      expect(mockGetUseByEmail).toBeCalledWith<[FilterQuery<UserDocument>]>({
+        email: 'foo@mail.com',
+      });
     });
   });
 
